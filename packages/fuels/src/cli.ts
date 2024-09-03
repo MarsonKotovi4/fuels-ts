@@ -59,6 +59,7 @@ export const configureCli = () => {
     .requiredOption('-o, --output <path>', 'Relative dir path for Typescript generation output')
     .option('--forc-path <path>', 'Path to the `forc` binary')
     .option('--fuel-core-path <path>', 'Path to the `fuel-core` binary')
+    .option('--auto-start-fuel-core', 'Auto-starts a `fuel-core` node during `dev` command')
     .option(
       '--fuel-core-port <port>',
       'Port to use when starting a local `fuel-core` node for dev mode'
