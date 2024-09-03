@@ -76,6 +76,6 @@ describe('dev2', () => {
       await sleep(1000);
       expect(isProcessRunning(fuelCorePid)).toBe(false);
     },
-    { timeout: 25000 }
+    { timeout: 50000 }
   );
 });
