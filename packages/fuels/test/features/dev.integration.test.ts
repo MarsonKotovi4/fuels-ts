@@ -19,27 +19,7 @@ function runInit() {
   mkdirSync(contractDir);
   mkdirSync(outputDir);
   execSync(`${process.env.FORC_PATH} init`, { cwd: contractDir });
-  try {
-    execSync(`pnpm fuels init -o ${outputDir} -c ${contractDir} --path ${init} --fuel-core-port 0`);
-  } catch (e) {
-    type BufferData = { type: 'Buffer'; data: Uint8Array };
-    const error = e as Error & {
-      status: number;
-      signal: null;
-      output: [null, BufferData, BufferData];
-      pid: number;
-      stdout: BufferData;
-      stderr: BufferData;
-    };
-
-    [error.output[1], error.stdout].forEach((val) => {
-      // @ts-expect-error asd
-      console.log((val as Buffer)?.toString());
-      console.log(String.fromCharCode(...(val.data ?? [])));
-    });
-
-    throw e;
-  }
+  execSync(`pnpm fuels init -o ${outputDir} -c ${contractDir} --fuel-core-port 0`, { cwd: init });
 
   return {
     init,
