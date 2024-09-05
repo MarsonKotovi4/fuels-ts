@@ -1,0 +1,3 @@
+import { ContractFactory } from 'fuels';
+
+export class AbiContractFactory extends ContractFactory { }

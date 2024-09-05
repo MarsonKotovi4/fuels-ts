@@ -17,7 +17,7 @@ export function parseJsonAbi(abi: ParsableJsonAbi): Abi {
   const theAbi = typeof abi === 'string' ? (JSON.parse(abi) as { specVersion: string }) : abi;
   switch (theAbi.specVersion) {
     case '1':
-      return new AbiV1(abi as JsonAbi_V1);
+      return new AbiV1(theAbi as JsonAbi_V1);
     default:
       throw new Error('unsupported abi specification version');
   }
