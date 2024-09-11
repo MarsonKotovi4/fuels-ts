@@ -1,1 +1,9 @@
-It is a template indeed
+{{#if configurables}}
+export type {{name}}Configurables = Partial<{
+  {{#each configurables}}
+    {{name}}: {{inputLabel}};
+  {{/each}}
+}>;
+{{else}}
+export type {{name}}Configurables = undefined;
+{{/if}}
