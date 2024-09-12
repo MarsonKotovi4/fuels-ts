@@ -4,6 +4,8 @@ import type {
   AbiFunction,
   AbiLoggedType,
   AbiMessageType,
+  AbiType,
+  AbiTypeMetadata,
 } from '../../abi-parser-types';
 
 import type { JsonAbi_V1 } from './abi-specification-v1';
@@ -18,15 +20,19 @@ export class AbiV1 implements Abi {
   public loggedTypes: AbiLoggedType[];
   public messageTypes: AbiMessageType[];
   public configurables: AbiConfigurable[];
+  public types: AbiType[];
+  metadataTypes: AbiTypeMetadata[];
 
   constructor(public jsonAbi: JsonAbi_V1) {
     const resolvableTypes = jsonAbi.metadataTypes.map(
       (mt) => new ResolvableType(jsonAbi, mt.metadataTypeId, undefined)
     );
 
+    this.metadataTypes = resolvableTypes.map((t) => t.toAbiType());
     const types = jsonAbi.concreteTypes.map((t) =>
       makeResolvedType(jsonAbi, resolvableTypes, t.concreteTypeId).toAbiType()
     );
+    this.types = types;
 
     this.specVersion = jsonAbi.specVersion;
     this.encodingVersion = jsonAbi.encodingVersion;
@@ -36,31 +42,33 @@ export class AbiV1 implements Abi {
       attributes: fn.attributes ?? undefined,
       name: fn.name,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      output: types.find((t) => t.typeId === fn.output)!,
+      output: types.find((t) => t.concreteTypeId === fn.output)!,
       inputs: fn.inputs.map((i) => ({
         name: i.name,
+
+        // type: makeResolvedType(jsonAbi, resolvableTypes, i.concreteTypeId).toAbiType(),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        type: types.find((t) => t.typeId === i.concreteTypeId)!,
+        type: types.find((t) => t.concreteTypeId === i.concreteTypeId)!, // input.type === types[34] referentially
       })),
     }));
 
     this.loggedTypes = jsonAbi.loggedTypes.map((lt) => ({
       logId: lt.logId,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      type: types.find((t) => t.typeId === lt.concreteTypeId)!,
+      type: types.find((t) => t.concreteTypeId === lt.concreteTypeId)!,
     }));
 
     this.messageTypes = jsonAbi.messagesTypes.map((mt) => ({
       messageId: mt.message_id,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      type: types.find((t) => t.typeId === mt.concreteTypeId)!,
+      type: types.find((t) => t.concreteTypeId === mt.concreteTypeId)!,
     }));
 
     this.configurables = jsonAbi.configurables.map((c) => ({
       name: c.name,
       offset: c.offset,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      type: types.find((t) => t.typeId === c.concreteTypeId)!,
+      type: types.find((t) => t.concreteTypeId === c.concreteTypeId)!,
     }));
   }
 }

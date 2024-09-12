@@ -1,5 +1,4 @@
 import { AbiGen } from '@fuel-ts/abi';
-import { log } from 'console';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -29,9 +28,8 @@ describe('AbiGen', () => {
 
     const typesContent = readFileSync(typesFile).toString();
 
-    expect(gen.results.find((r) => r.filename === 'AbiContractTypes.ts')?.content).toEqual(
-      typesContent
-    );
+    const res = gen.results.find((r) => r.filename === 'AbiContractTypes.ts')?.content;
+    expect(res).toEqual(typesContent);
   });
 
   // test('script', () => {

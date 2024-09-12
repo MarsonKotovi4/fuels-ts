@@ -1,3 +1,5 @@
+import type { AbiTypeMetadata } from '../../abi-parser-types';
+
 import type {
   MetadataType,
   Component,
@@ -25,6 +27,15 @@ export class ResolvableType {
   private metadataType: MetadataType;
   type: string;
   components: ResolvableComponent[] | undefined;
+
+  toAbiType(): AbiTypeMetadata {
+    return {
+      metadataTypeId: this.metadataTypeId,
+      components: this.components?.map((c) => ({ name: c.name, type: c.type.toAbiType() })),
+      swayType: this.type,
+      typeParameters: this.typeParamsArgsMap?.map(([, t]) => (t as ResolvableType).toAbiType()),
+    };
+  }
 
   constructor(
     abi: JsonAbi_V1,
@@ -100,7 +111,13 @@ export class ResolvableType {
   private static resolveConcreteType(abi: JsonAbi_V1, type: ConcreteType): ResolvedType {
     const concreteType = type;
     if (concreteType.metadataTypeId === undefined) {
-      return new ResolvedType(concreteType.type, concreteType.concreteTypeId, undefined, undefined);
+      return new ResolvedType(
+        concreteType.type,
+        concreteType.concreteTypeId,
+        undefined,
+        undefined,
+        undefined
+      );
     }
 
     if (!concreteType.typeArguments) {
@@ -191,7 +208,13 @@ export class ResolvableType {
 
       return { name: c.name, type: c.type.resolveInternal(c.type.metadataTypeId, typeArgs) };
     });
-    return new ResolvedType(this.metadataType.type, typeId, components, typeArgs);
+    return new ResolvedType(
+      this.metadataType.type,
+      typeId,
+      components,
+      typeArgs,
+      this.metadataTypeId
+    );
   }
 
   private resolveTypeArgs(

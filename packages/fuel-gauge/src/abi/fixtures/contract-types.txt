@@ -1,1 +1,27 @@
-export type AbiContractConfigurables = undefined;
+import type { BigNumberish } from 'fuels';
+
+export type MyGenericStructInput<T> = { x: BigNumberish, y: BigNumberish, z: T };
+export type MyGenericStructOutput<T> = { x: number, y: number, z: T };
+export type MyStructInput = { a: BigNumberish, b: boolean };
+export type MyStructOutput = { a: number, b: boolean };
+
+export interface AbiContractTypes {
+    functions: {
+        types_bool: {
+            inputs: [input: boolean];
+            output: boolean;
+        };
+        types_generic_struct: {
+            inputs: [input: MyGenericStructInput<boolean>];
+            output: MyGenericStructOutput<number>;
+        };
+        types_struct: {
+            inputs: [input: MyStructInput];
+            output: MyStructOutput;
+        };
+        types_u8: {
+            inputs: [input: BigNumberish];
+            output: number;
+        };
+    }
+}

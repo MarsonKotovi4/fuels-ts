@@ -47,7 +47,7 @@ const tuple: Matcher = (type) => TUPLE_REGEX.test(type);
 export const ARRAY_REGEX = /\[(?<item>[\w\s\\[\]]+);\s*(?<length>[0-9]+)\]/;
 const array: Matcher = (type) => ARRAY_REGEX.test(type);
 
-const STRUCT_REGEX = /^struct .+$/m;
+export const STRUCT_REGEX = /^struct (?<name>.+)$/m;
 const STRUCT_STD_REGEX =
   /^struct std::.*(AssetId|B512|Vec|RawVec|EvmAddress|Bytes|String|RawBytes)$/m;
 const struct: Matcher = (type) => STRUCT_REGEX.test(type) && !STRUCT_STD_REGEX.test(type);
