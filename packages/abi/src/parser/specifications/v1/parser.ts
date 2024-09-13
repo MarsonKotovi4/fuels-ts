@@ -13,9 +13,9 @@ import type {
 
 export class AbiParserV1 {
   static parse(abi: AbiSpecificationV1): Abi {
-    const resolvableTypes = abi.metadataTypes.map(
-      (metadataType) => new ResolvableType(abi, metadataType.metadataTypeId, undefined)
-    );
+    const resolvableTypes = abi.metadataTypes
+      .map((metadataType) => new ResolvableType(abi, metadataType.metadataTypeId, undefined))
+      .filter((x) => x.type !== 'struct std::vec::RawVec');
 
     const types = abi.concreteTypes.map((t) =>
       makeResolvedType(abi, resolvableTypes, t.concreteTypeId).toAbiType()

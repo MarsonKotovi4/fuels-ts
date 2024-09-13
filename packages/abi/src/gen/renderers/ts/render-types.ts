@@ -14,7 +14,10 @@ export interface RenderTypesOutput extends AbiGenResult {
 }
 
 function typeFilter(t: AbiTypeMetadata) {
-  return STRUCT_REGEX.test(t.swayType) || ENUM_REGEX.test(t.swayType);
+  return (
+    (STRUCT_REGEX.test(t.swayType) && t.swayType !== 'struct std::vec::Vec') ||
+    ENUM_REGEX.test(t.swayType)
+  );
 }
 
 export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {

@@ -34,6 +34,7 @@ const u64TyperReturn: TyperReturn = {
   output: 'BigNumberish',
 };
 const u64Typer: Typer = () => u64TyperReturn;
+const u256Typer: Typer = u64Typer;
 
 const boolTyperReturn = {
   input: 'boolean',
@@ -82,7 +83,7 @@ function appendMappedComponents(
     wrap: '{}' | '[]' | '<>';
     padWrap: boolean;
   }
-): TyperReturn {
+) {
   const { wrap, padWrap, includeName } = opts;
   const mappedComponents = components!.map((c) => componentMapper(c, includeName));
 
@@ -95,13 +96,16 @@ function appendMappedComponents(
     .flatMap((v) => v.fuelsTypeImports)
     .filter((v) => v !== undefined) as string[];
 
+  const commonTypeImports = mappedComponents
+    .flatMap((v) => v.commonTypeImports)
+    .filter((v) => v !== undefined) as string[];
+
   // eslint-disable-next-line no-param-reassign
   obj.input += input;
   // eslint-disable-next-line no-param-reassign
   obj.output += output;
   obj.fuelsTypeImports?.push(...fuelsTypeImports);
-
-  return { input, output, fuelsTypeImports };
+  obj.commonTypeImports?.push(...commonTypeImports);
 }
 
 export const structTyper: Typer = (abiType) => {
@@ -184,31 +188,43 @@ export const arrayTyper: Typer = (abiType) => {
     input,
     output,
     fuelsTypeImports: mappedComponent.fuelsTypeImports,
-    commonTypeImports: ['ArrayOfLength'],
+    commonTypeImports: [...(mappedComponent.commonTypeImports ?? []), 'ArrayOfLength'],
+  };
+};
+
+export const vectorTyper: Typer = (abiType) => {
+  const { type } = abiType.components![0]!;
+  const mappedComponent = typerMatcher(type)!(type);
+  const input = `${mappedComponent.input}[]`;
+  const output = `${mappedComponent.output}[]`;
+  return {
+    ...mappedComponent,
+    input,
+    output,
   };
 };
 
 export const typerMatcher = createMatcher<Typer | undefined>({
-  array: arrayTyper,
   bool: boolTyper,
   u8: u8Typer,
   u16: u16Typer,
   u32: u32Typer,
   u64: u64Typer,
+  u256: u256Typer,
+  b256: b256Typer,
+  tuple: tupleTyper,
+  array: arrayTyper,
   struct: structTyper,
   generic: genericTyper,
-  tuple: tupleTyper,
   string: stringTyper,
-  b256: b256Typer,
+  vector: vectorTyper,
   void: undefined,
-  u256: undefined,
   stdString: undefined,
   option: undefined,
   result: undefined,
   enum: undefined,
   b512: undefined,
   bytes: undefined,
-  vector: undefined,
   assetId: undefined,
   evmAddress: undefined,
   rawUntypedPtr: undefined,

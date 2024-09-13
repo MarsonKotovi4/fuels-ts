@@ -32,5 +32,9 @@ export interface AbiContractTypes {
             inputs: [input: BigNumberish];
             output: number;
         };
+        types_vector: {
+            inputs: [vec: BigNumberish[]];
+            output: BigNumberish[];
+        };
     }
 }
