@@ -7,10 +7,6 @@ import {
 } from '../../../../matchers/sway-type-matchers';
 import type { AbiType, AbiTypeComponent, AbiTypeMetadata } from '../../../../parser';
 
-// MyStruct<T extends "input" | "output"> = { a: OurNumber<T>, b: boolean }
-// MyStruct<"input">
-// MyStruct<"output">
-
 export interface TyperReturn {
   input: string;
   output: string;
@@ -34,7 +30,7 @@ const u8Typer: Typer = () => numberTyperReturn;
 const u16Typer = u8Typer;
 const u32Typer = u8Typer;
 const u64TyperReturn: TyperReturn = {
-  input: 'BigNumberish',
+  ...numberTyperReturn,
   output: 'BigNumberish',
 };
 const u64Typer: Typer = () => u64TyperReturn;
