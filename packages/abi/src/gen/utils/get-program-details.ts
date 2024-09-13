@@ -1,8 +1,8 @@
 import { compressBytecode, hexlify } from '@fuel-ts/utils';
 import { globSync, readFileSync } from 'fs';
 
-import type { Abi } from '../../parser';
-import { parseJsonAbi } from '../../parser/abi-parser';
+import { AbiParser, type Abi } from '../../parser';
+import type { AbiSpecification } from '../../parser/abi-parser';
 
 export interface ProgramDetails {
   name: string;
@@ -52,7 +52,7 @@ export function getProgramDetails(buildDirs: string[]) {
 
     details.push({
       name: normalizeProjectName(projectName),
-      abi: parseJsonAbi(abiContents),
+      abi: AbiParser.parse(JSON.parse(abiContents) as AbiSpecification),
       binCompressed,
     });
   });
