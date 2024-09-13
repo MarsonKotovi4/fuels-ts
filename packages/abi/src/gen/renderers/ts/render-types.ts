@@ -1,5 +1,7 @@
 import { compile } from 'handlebars';
 
+import { ENUM_REGEX, STRUCT_REGEX } from '../../../matchers/sway-type-matchers';
+import type { AbiTypeMetadata } from '../../../parser';
 import type { AbiGenResult } from '../../abi-gen';
 import type { ProgramDetails } from '../../utils/get-program-details';
 
@@ -9,13 +11,18 @@ import { typerMatcher } from './typers/typers';
 export interface RenderTypesOutput extends AbiGenResult {
   importNames: string[];
 }
+
+function typeFilter(t: AbiTypeMetadata) {
+  return STRUCT_REGEX.test(t.swayType) || ENUM_REGEX.test(t.swayType);
+}
+
 export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
-  const types = abi.metadataTypes.filter((t) => t.components).map((t) => typerMatcher(t)!(t));
+  const types = abi.metadataTypes.filter(typeFilter).map((t) => typerMatcher(t)!(t));
 
   const fuelsTypeImports = [
     ...new Set(
       types
-        .map((t) => t.requiredFuelsImports)
+        .map((t) => t.fuelsTypeImports)
         .filter((x) => x !== undefined)
         .flat()
     ),

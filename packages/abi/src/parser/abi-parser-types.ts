@@ -51,9 +51,6 @@ export interface Abi {
 }
 
 export interface AbiTypeComponent {
-  genericInfo?: {
-    typeParameterName: 'T';
-  };
   name: string;
   type: AbiType;
 }

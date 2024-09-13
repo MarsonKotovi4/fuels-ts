@@ -7,6 +7,10 @@ export type MyStructOutput = { a: number, b: boolean };
 
 export interface AbiContractTypes {
     functions: {
+        struct_with_tuple: {
+            inputs: [x: MyGenericStructInput<[boolean, BigNumberish]>];
+            output: MyGenericStructOutput<[boolean, BigNumberish]>;
+        };
         types_bool: {
             inputs: [input: boolean];
             output: boolean;

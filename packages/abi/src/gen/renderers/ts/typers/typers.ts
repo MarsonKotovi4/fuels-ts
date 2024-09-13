@@ -10,22 +10,32 @@ import type { AbiType, AbiTypeMetadata } from '../../../../parser';
 // MyStruct<"input">
 // MyStruct<"output">
 
-export type Typer = (abiType: AbiType | AbiTypeMetadata) => {
+export interface TyperReturn {
   input: string;
   output: string;
-  requiredFuelsImports?: string[];
-};
+  fuelsTypeImports?: string[];
+}
+
+export type Typer = (
+  abiType: AbiType | AbiTypeMetadata,
+  metadataTypeResults?: TyperReturn[]
+) => TyperReturn;
 
 const numberTyperReturn: ReturnType<Typer> = {
   input: 'BigNumberish',
   output: 'number',
-  requiredFuelsImports: ['BigNumberish'],
+  fuelsTypeImports: ['BigNumberish'],
 };
 
 const u8Typer: Typer = () => numberTyperReturn;
 
 const u16Typer = u8Typer;
 const u32Typer = u8Typer;
+const u64TyperReturn: TyperReturn = {
+  input: 'BigNumberish',
+  output: 'BigNumberish',
+};
+const u64Typer: Typer = () => u64TyperReturn;
 
 const boolTyperReturn = {
   input: 'boolean',
@@ -41,7 +51,7 @@ const genericTyper: Typer = (type) => {
   };
 };
 
-export const structTyper: Typer = (abiType: AbiType | AbiTypeMetadata) => {
+export const structTyper: Typer = (abiType, metadataTypeResults) => {
   const typeName = STRUCT_REGEX.exec(abiType.swayType)![1];
   const requiredFuelsImports: string[] = [];
 
@@ -56,41 +66,20 @@ export const structTyper: Typer = (abiType: AbiType | AbiTypeMetadata) => {
       metadata?.typeArguments.forEach((ta, idx, arr) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const typer = typerMatcher(ta)!;
-        const result = typer(ta);
+        const result = typer(ta, metadataTypeResults);
         const commaOrNot = idx + 1 === arr.length ? '' : ',';
         input += result.input + commaOrNot;
         output += result.output + commaOrNot;
 
-        if (result.requiredFuelsImports) {
-          requiredFuelsImports.push(...result.requiredFuelsImports);
+        if (result.fuelsTypeImports) {
+          requiredFuelsImports.push(...result.fuelsTypeImports);
         }
       });
       input += '>';
       output += '>';
     }
 
-    // input += '= {';
-    // output += '= {';
-
-    // components?.forEach((c) => {
-    //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    //   const typer = typerMatcher({
-    //     swayType: 'swayType' in c.type ? c.type.swayType : c.type,
-    //   })!;
-    //   const result = typer(c.type);
-
-    //   input += `${c.name}: ${result.input},\n`;
-    //   output += `${c.name}: ${result.output},\n`;
-
-    //   if (result.requiredFuelsImports) {
-    //     requiredFuelsImports.push(...result.requiredFuelsImports);
-    //   }
-    // });
-
-    // input += '}';
-    // output += '}';
-
-    return { input, output, requiredFuelsImports };
+    return { input, output, fuelsTypeImports: requiredFuelsImports };
   }
 
   const { components, typeParameters } = abiType;
@@ -104,7 +93,7 @@ export const structTyper: Typer = (abiType: AbiType | AbiTypeMetadata) => {
     typeParameters.forEach((ta, idx, arr) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const typer = typerMatcher({ swayType: ta.swayType })!;
-      const result = typer(ta);
+      const result = typer(ta, metadataTypeResults);
       const commaOrNot = idx + 1 === arr.length ? '' : ',';
       input += result.input + commaOrNot;
       output += result.output + commaOrNot;
@@ -121,22 +110,37 @@ export const structTyper: Typer = (abiType: AbiType | AbiTypeMetadata) => {
     const typer = typerMatcher({
       swayType: 'swayType' in c.type ? c.type.swayType : c.type,
     })!;
-    const result = typer(c.type);
+    const result = typer(c.type, metadataTypeResults);
 
     const commaOrNot = idx + 1 === arr.length ? '' : ',';
 
     input += ` ${c.name}: ${result.input}${commaOrNot}`;
     output += ` ${c.name}: ${result.output}${commaOrNot}`;
 
-    if (result.requiredFuelsImports) {
-      requiredFuelsImports.push(...result.requiredFuelsImports);
+    if (result.fuelsTypeImports) {
+      requiredFuelsImports.push(...result.fuelsTypeImports);
     }
   });
 
   input += ' }';
   output += ' }';
 
-  return { input, output, requiredFuelsImports };
+  return { input, output, fuelsTypeImports: requiredFuelsImports };
+};
+
+export const tupleTyper: Typer = (abiType) => {
+  const asdf = abiType.components?.map(({ type }) => typerMatcher(type)!(type));
+
+  const input = `[${asdf?.map((v) => v.input).join(', ')}]`;
+  const output = `[${asdf?.map((v) => v.output).join(', ')}]`;
+  const fuelsTypeImports = asdf
+    ?.flatMap((v) => v.fuelsTypeImports)
+    .filter((v) => v !== undefined) as string[] | undefined;
+  return {
+    input,
+    output,
+    fuelsTypeImports,
+  };
 };
 
 export const typerMatcher = createMatcher<Typer | undefined>({
@@ -144,11 +148,12 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   u8: u8Typer,
   u16: u16Typer,
   u32: u32Typer,
+  u64: u64Typer,
   struct: structTyper,
   generic: genericTyper,
+  tuple: tupleTyper,
   string: undefined,
   void: undefined,
-  u64: undefined,
   u256: undefined,
   b256: undefined,
   stdString: undefined,
@@ -158,7 +163,6 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   b512: undefined,
   bytes: undefined,
   vector: undefined,
-  tuple: undefined,
   array: undefined,
   assetId: undefined,
   evmAddress: undefined,
