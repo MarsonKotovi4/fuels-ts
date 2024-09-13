@@ -4,7 +4,7 @@ import {
   GENERIC_REGEX,
   STRUCT_REGEX,
 } from '../../../../matchers/sway-type-matchers';
-import type { AbiType, AbiTypeMetadata } from '../../../../parser';
+import type { AbiType, AbiTypeComponent, AbiTypeMetadata } from '../../../../parser';
 
 // MyStruct<T extends "input" | "output"> = { a: OurNumber<T>, b: boolean }
 // MyStruct<"input">
@@ -51,96 +51,118 @@ const genericTyper: Typer = (type) => {
   };
 };
 
-export const structTyper: Typer = (abiType, metadataTypeResults) => {
+function componentMapper(
+  c: AbiTypeComponent | { name: string; type: AbiType | AbiTypeMetadata },
+  includeName: boolean
+): TyperReturn {
+  const mapped = typerMatcher(c.type)!(c.type);
+
+  if (!includeName) {
+    return mapped;
+  }
+
+  return {
+    input: `${c.name}: ${mapped.input}`,
+    output: `${c.name}: ${mapped.output}`,
+    fuelsTypeImports: mapped.fuelsTypeImports,
+  };
+}
+
+function appendMappedComponents(
+  obj: TyperReturn,
+  components: AbiType['components'] | AbiTypeMetadata['components'],
+  opts: {
+    includeName: boolean;
+    wrap: '{}' | '[]' | '<>';
+    padWrap: boolean;
+  }
+): TyperReturn {
+  const { wrap, padWrap, includeName } = opts;
+  const mappedComponents = components!.map((c) => componentMapper(c, includeName));
+
+  const [leftWrap, rightWrap] = wrap.split('');
+  const wrapPadding = padWrap ? ' ' : '';
+
+  const input = `${leftWrap}${wrapPadding}${mappedComponents.map((c) => c.input).join(', ')}${wrapPadding}${rightWrap}`;
+  const output = `${leftWrap}${wrapPadding}${mappedComponents.map((c) => c.output).join(', ')}${wrapPadding}${rightWrap}`;
+  const fuelsTypeImports = mappedComponents
+    .flatMap((v) => v.fuelsTypeImports)
+    .filter((v) => v !== undefined) as string[];
+
+  // eslint-disable-next-line no-param-reassign
+  obj.input += input;
+  // eslint-disable-next-line no-param-reassign
+  obj.output += output;
+  obj.fuelsTypeImports?.push(...fuelsTypeImports);
+
+  return { input, output, fuelsTypeImports };
+}
+
+export const structTyper: Typer = (abiType) => {
   const typeName = STRUCT_REGEX.exec(abiType.swayType)![1];
-  const requiredFuelsImports: string[] = [];
+
+  const response: TyperReturn = {
+    input: `${typeName}Input`,
+    output: `${typeName}Output`,
+    fuelsTypeImports: [],
+  };
 
   if ('concreteTypeId' in abiType) {
     const { metadata } = abiType;
 
-    let input = `${typeName}Input`;
-    let output = `${typeName}Output`;
-    if (metadata?.typeArguments) {
-      input += '<';
-      output += '<';
-      metadata?.typeArguments.forEach((ta, idx, arr) => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const typer = typerMatcher(ta)!;
-        const result = typer(ta, metadataTypeResults);
-        const commaOrNot = idx + 1 === arr.length ? '' : ',';
-        input += result.input + commaOrNot;
-        output += result.output + commaOrNot;
-
-        if (result.fuelsTypeImports) {
-          requiredFuelsImports.push(...result.fuelsTypeImports);
-        }
-      });
-      input += '>';
-      output += '>';
+    if (!metadata?.typeArguments) {
+      return response;
     }
 
-    return { input, output, fuelsTypeImports: requiredFuelsImports };
+    appendMappedComponents(
+      response,
+      metadata.typeArguments.map((t) => ({ name: '', type: t })),
+      {
+        includeName: false,
+        wrap: '<>',
+        padWrap: false,
+      }
+    );
+
+    return response;
   }
 
   const { components, typeParameters } = abiType;
 
-  let input = `${typeName}Input`;
-  let output = `${typeName}Output`;
-
   if (typeParameters) {
-    input += '<';
-    output += '<';
-    typeParameters.forEach((ta, idx, arr) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const typer = typerMatcher({ swayType: ta.swayType })!;
-      const result = typer(ta, metadataTypeResults);
-      const commaOrNot = idx + 1 === arr.length ? '' : ',';
-      input += result.input + commaOrNot;
-      output += result.output + commaOrNot;
-    });
-    input += '>';
-    output += '>';
+    appendMappedComponents(
+      response,
+      typeParameters.map((t) => ({ name: '', type: t })),
+      {
+        includeName: false,
+        wrap: '<>',
+        padWrap: false,
+      }
+    );
   }
 
-  input += ' = {';
-  output += ' = {';
+  response.input += ' = ';
+  response.output += ' = ';
 
-  components?.forEach((c, idx, arr) => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const typer = typerMatcher({
-      swayType: 'swayType' in c.type ? c.type.swayType : c.type,
-    })!;
-    const result = typer(c.type, metadataTypeResults);
-
-    const commaOrNot = idx + 1 === arr.length ? '' : ',';
-
-    input += ` ${c.name}: ${result.input}${commaOrNot}`;
-    output += ` ${c.name}: ${result.output}${commaOrNot}`;
-
-    if (result.fuelsTypeImports) {
-      requiredFuelsImports.push(...result.fuelsTypeImports);
-    }
+  appendMappedComponents(response, components, {
+    includeName: true,
+    wrap: '{}',
+    padWrap: true,
   });
 
-  input += ' }';
-  output += ' }';
-
-  return { input, output, fuelsTypeImports: requiredFuelsImports };
+  return response;
 };
 
 export const tupleTyper: Typer = (abiType) => {
-  const asdf = abiType.components?.map(({ type }) => typerMatcher(type)!(type));
+  const response: TyperReturn = { input: '', output: '', fuelsTypeImports: [] };
 
-  const input = `[${asdf?.map((v) => v.input).join(', ')}]`;
-  const output = `[${asdf?.map((v) => v.output).join(', ')}]`;
-  const fuelsTypeImports = asdf
-    ?.flatMap((v) => v.fuelsTypeImports)
-    .filter((v) => v !== undefined) as string[] | undefined;
-  return {
-    input,
-    output,
-    fuelsTypeImports,
-  };
+  appendMappedComponents(response, abiType.components, {
+    includeName: false,
+    wrap: '[]',
+    padWrap: false,
+  });
+
+  return response;
 };
 
 export const typerMatcher = createMatcher<Typer | undefined>({
