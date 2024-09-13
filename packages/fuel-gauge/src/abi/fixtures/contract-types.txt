@@ -1,4 +1,5 @@
 import type { BigNumberish } from 'fuels';
+import type { ArrayOfLength } from './common';
 
 export type MyGenericStructInput<T> = { x: BigNumberish, y: BigNumberish, z: T };
 export type MyGenericStructOutput<T> = { x: number, y: number, z: T };
@@ -10,6 +11,10 @@ export interface AbiContractTypes {
         struct_with_tuple: {
             inputs: [x: MyGenericStructInput<[boolean, BigNumberish]>];
             output: MyGenericStructOutput<[boolean, BigNumberish]>;
+        };
+        types_array: {
+            inputs: [arg: ArrayOfLength<string, 5>];
+            output: ArrayOfLength<string, 2>;
         };
         types_bool: {
             inputs: [input: boolean];

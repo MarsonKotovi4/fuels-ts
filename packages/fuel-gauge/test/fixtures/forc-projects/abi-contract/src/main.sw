@@ -27,6 +27,7 @@ abi AbiContract {
     fn types_bool(input: bool) -> bool;
     fn types_struct(input: MyStruct) -> MyStruct;
     fn types_generic_struct(input: MyGenericStruct<bool>) -> MyGenericStruct<u8>;
+    fn types_array(arg: [b256; 5]) -> [b256; 2];
     fn struct_with_tuple(x: MyGenericStruct<(bool, u64)>) -> MyGenericStruct<(bool, u64)>;
 }
 
@@ -53,5 +54,11 @@ impl AbiContract for Contract {
             y: 2,
             z: (true, 55),
         }
+    }
+    fn types_array(arg: [b256; 5]) -> [b256; 2] {
+        [
+            0x0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20,
+            0x0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20,
+        ]
     }
 }

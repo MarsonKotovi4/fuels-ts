@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {
+  ARRAY_REGEX,
   createMatcher,
   GENERIC_REGEX,
   STRUCT_REGEX,
@@ -14,6 +15,7 @@ export interface TyperReturn {
   input: string;
   output: string;
   fuelsTypeImports?: string[];
+  commonTypeImports?: string[];
 }
 
 export type Typer = (
@@ -42,6 +44,14 @@ const boolTyperReturn = {
   output: 'boolean',
 };
 const boolTyper: Typer = () => boolTyperReturn;
+
+const stringTyperReturn: TyperReturn = {
+  input: 'string',
+  output: 'string',
+};
+
+const stringTyper: Typer = () => stringTyperReturn;
+const b256Typer: Typer = stringTyper;
 
 const genericTyper: Typer = (type) => {
   const typeName = GENERIC_REGEX.exec(type.swayType)![1];
@@ -165,7 +175,25 @@ export const tupleTyper: Typer = (abiType) => {
   return response;
 };
 
+export const arrayTyper: Typer = (abiType) => {
+  const length = ARRAY_REGEX.exec(abiType.swayType)![2];
+
+  const { type } = abiType.components![0]!;
+  const mappedComponent = typerMatcher(type)!(type);
+
+  const input = `ArrayOfLength<${mappedComponent.input}, ${length}>`;
+  const output = `ArrayOfLength<${mappedComponent.output}, ${length}>`;
+
+  return {
+    input,
+    output,
+    fuelsTypeImports: mappedComponent.fuelsTypeImports,
+    commonTypeImports: ['ArrayOfLength'],
+  };
+};
+
 export const typerMatcher = createMatcher<Typer | undefined>({
+  array: arrayTyper,
   bool: boolTyper,
   u8: u8Typer,
   u16: u16Typer,
@@ -174,10 +202,10 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   struct: structTyper,
   generic: genericTyper,
   tuple: tupleTyper,
-  string: undefined,
+  string: stringTyper,
+  b256: b256Typer,
   void: undefined,
   u256: undefined,
-  b256: undefined,
   stdString: undefined,
   option: undefined,
   result: undefined,
@@ -185,7 +213,6 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   b512: undefined,
   bytes: undefined,
   vector: undefined,
-  array: undefined,
   assetId: undefined,
   evmAddress: undefined,
   rawUntypedPtr: undefined,

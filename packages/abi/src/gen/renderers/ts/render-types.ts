@@ -6,6 +6,7 @@ import type { AbiGenResult } from '../../abi-gen';
 import type { ProgramDetails } from '../../utils/get-program-details';
 
 import template from './templates/types.hbs';
+import type { TyperReturn } from './typers/typers';
 import { typerMatcher } from './typers/typers';
 
 export interface RenderTypesOutput extends AbiGenResult {
@@ -17,37 +18,44 @@ function typeFilter(t: AbiTypeMetadata) {
 }
 
 export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
-  const types = abi.metadataTypes.filter(typeFilter).map((t) => typerMatcher(t)!(t));
+  const mTypes = abi.metadataTypes.filter(typeFilter).map((t) => typerMatcher(t)!(t));
+
+  const cTypes = abi.types.reduce<Record<string, TyperReturn>>((res, val) => {
+    res[val.concreteTypeId] = typerMatcher(val)!(val);
+    return res;
+  }, {});
 
   const fuelsTypeImports = [
     ...new Set(
-      types
-        .map((t) => t.fuelsTypeImports)
+      mTypes
+        .flatMap((t) => t.fuelsTypeImports)
+        .concat(Object.values(cTypes).flatMap((ct) => ct.fuelsTypeImports))
         .filter((x) => x !== undefined)
-        .flat()
+    ),
+  ].join(', ');
+
+  const commonTypeImports = [
+    ...new Set(
+      mTypes
+        .flatMap((t) => t.commonTypeImports)
+        .concat(Object.values(cTypes).flatMap((ct) => ct.commonTypeImports))
+        .filter((x) => x !== undefined)
     ),
   ].join(', ');
 
   const functions = abi.functions.map((fn) => ({
     name: fn.name,
-    inputs: `[${fn.inputs
-      .map(({ name: argumentName, type }) => {
-        const typer = typerMatcher(type)!(type);
-        const res = `${argumentName}: ${typer.input}`;
-        return res;
-      })
-      .join(', ')}]`,
-    output: typerMatcher(fn.output)!(fn.output).output,
+    inputs: `[${fn.inputs.map((i) => `${i.name}: ${cTypes[i.type.concreteTypeId].input}`).join(', ')}]`,
+    output: cTypes[fn.output.concreteTypeId].output,
   }));
 
-  // console.log(result);
-  // will handle abi + typers here to get content
   const renderTemplate = compile(template, { strict: true, noEscape: true });
 
   const content = renderTemplate({
-    name,
-    types,
     fuelsTypeImports,
+    commonTypeImports,
+    name,
+    types: mTypes,
     functions,
   });
   return {
