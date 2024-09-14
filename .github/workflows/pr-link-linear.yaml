@@ -1,0 +1,15 @@
+on:
+  pull_request:
+    types: [edited]
+
+jobs:
+  link-to-linear:
+    runs:
+      on: ubuntu-latest
+      using: "node22"
+      run: >
+        | npm install tsx -g
+        | tsx ./scripts/pr-link-linear.mts
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        LINEAR_TOKEN: ${{ secrets.LINEAR_TOKEN }}
