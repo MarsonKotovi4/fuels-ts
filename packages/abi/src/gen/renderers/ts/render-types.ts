@@ -40,6 +40,16 @@ const metadataTypeFilter = createMatcher<boolean>({
   rawUntypedSlice: false,
 });
 
+function sortAlphabetically(a: TyperReturn, b: TyperReturn) {
+  if (a.input < b.input) {
+    return -1;
+  }
+  if (a.input > b.input) {
+    return 1;
+  }
+  return 0;
+}
+
 export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
   const mTypes = abi.metadataTypes.filter(metadataTypeFilter).map((t) => typerMatcher(t)!(t));
 
@@ -78,8 +88,8 @@ export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
 
   const renderTemplate = compile(template, { strict: true, noEscape: true });
 
-  const enums = mTypes.filter((t) => t.tsType === 'enum');
-  const types = mTypes.filter((t) => t.tsType === 'type');
+  const enums = mTypes.filter((t) => t.tsType === 'enum').sort(sortAlphabetically);
+  const types = mTypes.filter((t) => t.tsType === 'type').sort(sortAlphabetically);
   const content = renderTemplate({
     fuelsTypeImports,
     commonTypeImports,

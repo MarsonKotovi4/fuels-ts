@@ -189,6 +189,7 @@ abi MyContract {
     ) -> StructSingleGeneric<(bool, u64)>;
 
     fn types_enum(x: EnumWithNative) -> EnumWithNative;
+    fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
 /*
 
 
@@ -334,6 +335,9 @@ impl MyContract for Contract {
     fn types_enum(x: EnumWithNative) -> EnumWithNative {
         x
     }
+    fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType {
+        x
+    }
 /*
 
 
@@ -384,9 +388,7 @@ impl MyContract for Contract {
         x
     }
 
-    fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType {
-        x
-    }
+
     fn types_enum_with_vector(x: EnumWithVector) -> EnumWithVector {
         x
     }

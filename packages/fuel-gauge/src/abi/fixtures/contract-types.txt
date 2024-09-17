@@ -1,16 +1,18 @@
 import type { BigNumberish, Bytes, RawSlice, StdString, StrSlice } from 'fuels';
-import type { ArrayOfLength, Option } from './common';
+import type { ArrayOfLength, Enum, Option } from './common';
 
 export enum EnumWithNative { Checked = 'Checked', Pending = 'Pending' };
 
 export type ConfigurablesInput = { U8_VALUE: BigNumberish, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<BigNumberish>, GENERIC_STRUCT_VALUE: StructDoubleGenericInput<StructDoubleGenericInput<BigNumberish, BigNumberish>, BigNumberish> };
 export type ConfigurablesOutput = { U8_VALUE: number, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<number>, GENERIC_STRUCT_VALUE: StructDoubleGenericOutput<StructDoubleGenericOutput<number, number>, number> };
+export type EnumWithBuiltinTypeInput = Enum<{ a: boolean, b: BigNumberish }>;
+export type EnumWithBuiltinTypeOutput = EnumWithBuiltinTypeInput;
 export type StructDoubleGenericInput<T1, T2> = { a: T1, b: T2 };
-export type StructDoubleGenericOutput<T1, T2> = { a: T1, b: T2 };
+export type StructDoubleGenericOutput<T1, T2> = StructDoubleGenericInput<T1, T2>;
 export type StructSimpleInput = { a: boolean, b: BigNumberish };
 export type StructSimpleOutput = { a: boolean, b: number };
 export type StructSingleGenericInput<T> = { a: T };
-export type StructSingleGenericOutput<T> = { a: T };
+export type StructSingleGenericOutput<T> = StructSingleGenericInput<T>;
 
 export interface AbiContractTypes {
     functions: {
@@ -49,6 +51,10 @@ export interface AbiContractTypes {
         types_enum: {
             inputs: [x: EnumWithNative];
             output: EnumWithNative;
+        };
+        types_enum_with_builtin_type: {
+            inputs: [x: EnumWithBuiltinTypeInput];
+            output: EnumWithBuiltinTypeOutput;
         };
         types_raw_slice: {
             inputs: [x: RawSlice];
