@@ -81,8 +81,8 @@ export interface AbiContractTypes {
             output: StructSimpleOutput;
         };
         types_struct_with_tuple: {
-            inputs: [x: StructSingleGenericInput<[boolean, BigNumberish]>];
-            output: StructSingleGenericOutput<[boolean, BigNumberish]>;
+            inputs: [x: StructSingleGenericInput<[ boolean, BigNumberish ]>];
+            output: StructSingleGenericOutput<[ boolean, BigNumberish ]>;
         };
         types_u16: {
             inputs: [x: BigNumberish];

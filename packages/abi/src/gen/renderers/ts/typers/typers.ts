@@ -81,39 +81,6 @@ function componentMapper(
   };
 }
 
-function appendMappedComponents(
-  obj: TyperReturn,
-  components: AbiType['components'] | AbiTypeMetadata['components'],
-  opts: {
-    includeName: boolean;
-    wrap: '{}' | '[]' | '<>';
-    padWrap: boolean;
-  }
-) {
-  const { wrap, padWrap, includeName } = opts;
-  const mappedComponents = components!.map((c) => componentMapper(c, includeName));
-
-  const [leftWrap, rightWrap] = wrap.split('');
-  const wrapPadding = padWrap ? ' ' : '';
-
-  const input = `${leftWrap}${wrapPadding}${mappedComponents.map((c) => c.input).join(', ')}${wrapPadding}${rightWrap}`;
-  const output = `${leftWrap}${wrapPadding}${mappedComponents.map((c) => c.output).join(', ')}${wrapPadding}${rightWrap}`;
-  const fuelsTypeImports = mappedComponents
-    .flatMap((v) => v.fuelsTypeImports)
-    .filter((v) => v !== undefined) as string[];
-
-  const commonTypeImports = mappedComponents
-    .flatMap((v) => v.commonTypeImports)
-    .filter((v) => v !== undefined) as string[];
-
-  // eslint-disable-next-line no-param-reassign
-  obj.input += input;
-  // eslint-disable-next-line no-param-reassign
-  obj.output += output;
-  obj.fuelsTypeImports?.push(...fuelsTypeImports);
-  obj.commonTypeImports?.push(...commonTypeImports);
-}
-
 function mapTypeParameters(
   typeArgs: NonNullable<AbiType['metadata']>['typeArguments'] | AbiTypeMetadata['typeParameters']
 ): TyperReturn {
@@ -151,10 +118,11 @@ function mapStructAsReference(abiType: AbiType): TyperReturn {
   };
 }
 
-function mapContent(
+function mapComponents(
   components: AbiType['components'] | AbiTypeMetadata['components'],
-  opts: { includeName: boolean }
+  opts: { includeName: boolean; wrap: '{}' | '[]' }
 ) {
+  const [leftWrap, rightWrap] = opts.wrap.split('');
   const mapped = components!.map((c) => componentMapper(c, opts.includeName));
   const input = mapped.map((m) => m.input).join(', ');
   const output = mapped.map((m) => m.output).join(', ');
@@ -164,8 +132,8 @@ function mapContent(
     .filter((x) => x !== undefined);
 
   return {
-    input: `{ ${input} }`,
-    output: `{ ${output} }`,
+    input: `${leftWrap} ${input} ${rightWrap}`,
+    output: `${leftWrap} ${output} ${rightWrap}`,
     fuelsTypeImports,
     commonTypeImports,
   };
@@ -195,7 +163,7 @@ export const structTyper: Typer = (abiType) => {
   const { components } = abiType;
 
   const typeParameters = mapTypeParameters(abiType.typeParameters);
-  const content = wrapContent(mapContent(components, { includeName: true }));
+  const content = wrapContent(mapComponents(components, { includeName: true, wrap: '{}' }));
 
   const inputName = `${typeName}Input`;
   const inputType = `${inputName}${typeParameters.input}`;
@@ -218,42 +186,33 @@ export const structTyper: Typer = (abiType) => {
   };
 };
 
-export const tupleTyper: Typer = (abiType) => {
-  const response: TyperReturn = { input: '', output: '', fuelsTypeImports: [] };
-
-  appendMappedComponents(response, abiType.components, {
-    includeName: false,
-    wrap: '[]',
-    padWrap: false,
-  });
-
-  return response;
-};
+export const tupleTyper: Typer = (abiType) =>
+  mapComponents(abiType.components, { includeName: false, wrap: '[]' });
 
 export const arrayTyper: Typer = (abiType) => {
   const length = ARRAY_REGEX.exec(abiType.swayType)![2];
 
   const { type } = abiType.components![0]!;
-  const mappedComponent = typerMatcher(type)!(type);
+  const mapped = typerMatcher(type)!(type);
 
-  const input = `ArrayOfLength<${mappedComponent.input}, ${length}>`;
-  const output = `ArrayOfLength<${mappedComponent.output}, ${length}>`;
+  const input = `ArrayOfLength<${mapped.input}, ${length}>`;
+  const output = `ArrayOfLength<${mapped.output}, ${length}>`;
 
   return {
     input,
     output,
-    fuelsTypeImports: mappedComponent.fuelsTypeImports,
-    commonTypeImports: [...(mappedComponent.commonTypeImports ?? []), 'ArrayOfLength'],
+    fuelsTypeImports: mapped.fuelsTypeImports,
+    commonTypeImports: ['ArrayOfLength', ...(mapped.commonTypeImports ?? [])],
   };
 };
 
 export const vectorTyper: Typer = (abiType) => {
   const { type } = abiType.components![0]!;
-  const mappedComponent = typerMatcher(type)!(type);
-  const input = `${mappedComponent.input}[]`;
-  const output = `${mappedComponent.output}[]`;
+  const mapped = typerMatcher(type)!(type);
+  const input = `${mapped.input}[]`;
+  const output = `${mapped.output}[]`;
   return {
-    ...mappedComponent,
+    ...mapped,
     input,
     output,
   };
