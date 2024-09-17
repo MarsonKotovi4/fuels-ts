@@ -164,7 +164,6 @@ configurable {
 
 abi MyContract {
     fn configurables() -> Configurables;
-
     fn types_u8(x: u8) -> u8;
     fn types_u16(x: u16) -> u16;
     fn types_u32(x: u32) -> u32;
@@ -175,6 +174,7 @@ abi MyContract {
     fn types_b512(x: B512) -> B512;
     fn types_bytes(x: Bytes) -> Bytes;
 
+/*
     fn types_str(x: str[5]) -> str[5];
     fn types_str_slice(x: str) -> str;
     fn types_raw_slice(x: raw_slice) -> raw_slice;
@@ -253,12 +253,7 @@ abi MyContract {
     fn multi_arg_u64_struct(x: u64, y: StructSimple) -> (u64, StructSimple);
     fn multi_arg_str_str(x: str[5], y: str[5]) -> (str[5], str[5]);
     fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>);
-    fn multi_arg_complex(
-        x: StructDoubleGeneric<[b256; 3], u8>,
-        y: [StructDoubleGeneric<u64, bool>; 4],
-        z: (str[5], bool),
-        a: StructSimple,
-    );
+*/
 }
 
 impl MyContract for Contract {
@@ -286,21 +281,29 @@ impl MyContract for Contract {
     fn types_u256(x: u256) -> u256 {
         0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFu256
     }
-    fn types_str(x: str[5]) -> str[5] {
-        __to_str_array("Hello")
-    }
-    fn types_bool(x: bool) -> bool {
-        true
-    }
-    fn types_asset_id(x: AssetId) -> AssetId {
-        x
-    }
     fn types_b256(x: b256) -> b256 {
         0x0000000000000000000000000000000000000000000000000000000000000000
     }
     fn types_b512(x: B512) -> B512 {
         x
     }
+    fn types_bool(x: bool) -> bool {
+        true
+    }
+    fn types_bytes(x: Bytes) -> Bytes {
+        x
+    }
+/*
+
+
+    fn types_str(x: str[5]) -> str[5] {
+        __to_str_array("Hello")
+    }
+
+    fn types_asset_id(x: AssetId) -> AssetId {
+        x
+    }
+
     fn types_array(x: [u8; 4]) -> [u8; 4] {
         x
     }
@@ -391,9 +394,7 @@ impl MyContract for Contract {
     fn types_evm_address(x: EvmAddress) -> EvmAddress {
         EvmAddress::from(0x0606060606060606060606060606060606060606060606060606060606060606)
     }
-    fn types_bytes(x: Bytes) -> Bytes {
-        x
-    }
+
     fn types_raw_slice(x: raw_slice) -> raw_slice {
         x
     }
@@ -493,12 +494,5 @@ impl MyContract for Contract {
     fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>) {
         (x, y, z)
     }
-    fn multi_arg_complex(
-        x: StructDoubleGeneric<[b256; 3], u8>,
-        y: [StructDoubleGeneric<u64, bool>; 4],
-        z: (str[5], bool),
-        a: StructSimple,
-    ) {
-        ()
-    }
+*/
 }

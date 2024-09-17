@@ -1,40 +1,52 @@
-import type { BigNumberish } from 'fuels';
-import type { ArrayOfLength } from './common';
+import type { BigNumberish, Bytes } from 'fuels';
+import type { Option } from './common';
 
-export type MyGenericStructInput<T> = { x: BigNumberish, y: BigNumberish, z: T };
-export type MyGenericStructOutput<T> = { x: number, y: number, z: T };
-export type MyStructInput = { a: BigNumberish, b: boolean };
-export type MyStructOutput = { a: number, b: boolean };
+export type ConfigurablesInput = { U8_VALUE: BigNumberish, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<BigNumberish>, GENERIC_STRUCT_VALUE: StructDoubleGenericInput<StructDoubleGenericInput<BigNumberish, BigNumberish>, BigNumberish> };
+export type ConfigurablesOutput = { U8_VALUE: number, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<number>, GENERIC_STRUCT_VALUE: StructDoubleGenericOutput<StructDoubleGenericOutput<number, number>, number> };
+export type StructDoubleGenericInput<T1, T2> = { a: T1, b: T2 };
+export type StructDoubleGenericOutput<T1, T2> = { a: T1, b: T2 };
 
 export interface AbiContractTypes {
     functions: {
-        struct_with_tuple: {
-            inputs: [x: MyGenericStructInput<[boolean, BigNumberish]>];
-            output: MyGenericStructOutput<[boolean, BigNumberish]>;
+        configurables: {
+            inputs: [];
+            output: ConfigurablesOutput;
         };
-        types_array: {
-            inputs: [arg: ArrayOfLength<string, 5>];
-            output: ArrayOfLength<string, 2>;
+        types_b256: {
+            inputs: [x: string];
+            output: string;
+        };
+        types_b512: {
+            inputs: [x: string];
+            output: string;
         };
         types_bool: {
-            inputs: [input: boolean];
+            inputs: [x: boolean];
             output: boolean;
         };
-        types_generic_struct: {
-            inputs: [input: MyGenericStructInput<boolean>];
-            output: MyGenericStructOutput<number>;
+        types_bytes: {
+            inputs: [x: Bytes];
+            output: Bytes;
         };
-        types_struct: {
-            inputs: [input: MyStructInput];
-            output: MyStructOutput;
-        };
-        types_u8: {
-            inputs: [input: BigNumberish];
+        types_u16: {
+            inputs: [x: BigNumberish];
             output: number;
         };
-        types_vector: {
-            inputs: [vec: BigNumberish[]];
-            output: BigNumberish[];
+        types_u256: {
+            inputs: [x: BigNumberish];
+            output: BigNumberish;
+        };
+        types_u32: {
+            inputs: [x: BigNumberish];
+            output: number;
+        };
+        types_u64: {
+            inputs: [x: BigNumberish];
+            output: BigNumberish;
+        };
+        types_u8: {
+            inputs: [x: BigNumberish];
+            output: number;
         };
     }
 }

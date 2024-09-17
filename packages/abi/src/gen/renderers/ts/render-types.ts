@@ -1,7 +1,6 @@
 import { compile } from 'handlebars';
 
-import { ENUM_REGEX, STRUCT_REGEX } from '../../../matchers/sway-type-matchers';
-import type { AbiTypeMetadata } from '../../../parser';
+import { createMatcher } from '../../../matchers/sway-type-matchers';
 import type { AbiGenResult } from '../../abi-gen';
 import type { ProgramDetails } from '../../utils/get-program-details';
 
@@ -13,15 +12,35 @@ export interface RenderTypesOutput extends AbiGenResult {
   importNames: string[];
 }
 
-function typeFilter(t: AbiTypeMetadata) {
-  return (
-    (STRUCT_REGEX.test(t.swayType) && t.swayType !== 'struct std::vec::Vec') ||
-    ENUM_REGEX.test(t.swayType)
-  );
-}
+const metadataTypeFilter = createMatcher<boolean>({
+  string: false,
+  void: false,
+  bool: false,
+  u8: false,
+  u16: false,
+  u32: false,
+  u64: false,
+  u256: false,
+  b256: false,
+  generic: false,
+  stdString: false,
+  option: false,
+  result: false,
+  enum: true,
+  struct: true,
+  b512: false,
+  bytes: false,
+  vector: false,
+  tuple: false,
+  array: false,
+  assetId: false,
+  evmAddress: false,
+  rawUntypedPtr: false,
+  rawUntypedSlice: false,
+});
 
 export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
-  const mTypes = abi.metadataTypes.filter(typeFilter).map((t) => typerMatcher(t)!(t));
+  const mTypes = abi.metadataTypes.filter(metadataTypeFilter).map((t) => typerMatcher(t)!(t));
 
   const cTypes = abi.types.reduce<Record<string, TyperReturn>>((res, val) => {
     res[val.concreteTypeId] = typerMatcher(val)!(val);

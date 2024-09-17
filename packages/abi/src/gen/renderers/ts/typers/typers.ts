@@ -204,6 +204,27 @@ export const vectorTyper: Typer = (abiType) => {
   };
 };
 
+export const optionTyper: Typer = (abiType) => {
+  const { type } = abiType.components![1]!;
+  const some = typerMatcher(type)!(type);
+  const input = `Option<${some.input}>`;
+  const output = `Option<${some.output}>`;
+  return {
+    input,
+    output,
+    commonTypeImports: ['Option'],
+  };
+};
+
+export const b512Typer: Typer = stringTyper;
+
+const bytesTyperReturn: TyperReturn = {
+  input: 'Bytes',
+  output: 'Bytes',
+  fuelsTypeImports: ['Bytes'],
+};
+export const bytesTyper: Typer = () => bytesTyperReturn;
+
 export const typerMatcher = createMatcher<Typer | undefined>({
   bool: boolTyper,
   u8: u8Typer,
@@ -212,19 +233,19 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   u64: u64Typer,
   u256: u256Typer,
   b256: b256Typer,
+  b512: b512Typer,
   tuple: tupleTyper,
   array: arrayTyper,
   struct: structTyper,
   generic: genericTyper,
   string: stringTyper,
   vector: vectorTyper,
+  option: optionTyper,
+  bytes: bytesTyper,
   void: undefined,
   stdString: undefined,
-  option: undefined,
   result: undefined,
   enum: undefined,
-  b512: undefined,
-  bytes: undefined,
   assetId: undefined,
   evmAddress: undefined,
   rawUntypedPtr: undefined,

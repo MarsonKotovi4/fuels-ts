@@ -107,7 +107,7 @@ export function createMatcher<T>(mappings: Record<SwayType, T>) {
     for (const [key, matcher] of swayTypeMatcherEntries) {
       if (matcher(swayType)) {
         const mapping = mappings[key as SwayType];
-        if (mapping) {
+        if (mapping !== undefined) {
           return mapping;
         }
         break;
