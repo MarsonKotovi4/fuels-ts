@@ -2,8 +2,10 @@
 import {
   ARRAY_REGEX,
   createMatcher,
+  ENUM_REGEX,
   GENERIC_REGEX,
   STRUCT_REGEX,
+  swayTypeMatchers,
 } from '../../../../matchers/sway-type-matchers';
 import type { AbiType, AbiTypeComponent, AbiTypeMetadata } from '../../../../parser';
 
@@ -12,6 +14,7 @@ export interface TyperReturn {
   output: string;
   fuelsTypeImports?: string[];
   commonTypeImports?: string[];
+  tsType?: 'enum' | 'type';
 }
 
 export type Typer = (
@@ -115,6 +118,7 @@ export const structTyper: Typer = (abiType) => {
     input: `${typeName}Input`,
     output: `${typeName}Output`,
     fuelsTypeImports: [],
+    tsType: 'type',
   };
 
   if ('concreteTypeId' in abiType) {
@@ -244,7 +248,35 @@ const stdStringTyperReturn: TyperReturn = {
   output: 'StdString',
   fuelsTypeImports: ['StdString'],
 };
-export const stdStringTyper = () => stdStringTyperReturn;
+export const stdStringTyper: Typer = () => stdStringTyperReturn;
+
+function isNativeEnum(abiType: AbiType | AbiTypeMetadata) {
+  return abiType.components?.every((t) => swayTypeMatchers.void(t.type.swayType)) === true;
+}
+
+export const enumTyper: Typer = (abiType) => {
+  const typeName = ENUM_REGEX.exec(abiType.swayType)![1];
+
+  if (isNativeEnum(abiType)) {
+    if ('concreteTypeId' in abiType) {
+      return { input: typeName, output: typeName };
+    }
+
+    const enumFields = abiType.components!.map((c) => `${c.name} = '${c.name}'`).join(', ');
+    const input = `${typeName} { ${enumFields} }`;
+    return {
+      input,
+      output: input,
+      tsType: 'enum',
+    };
+  }
+
+  return {
+    input: typeName,
+    output: typeName,
+    tsType: 'type',
+  };
+};
 export const typerMatcher = createMatcher<Typer | undefined>({
   bool: boolTyper,
   u8: u8Typer,
@@ -265,9 +297,9 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   str: strTyper,
   rawUntypedSlice: rawSliceTyper,
   stdString: stdStringTyper,
+  enum: enumTyper,
   void: undefined,
   result: undefined,
-  enum: undefined,
   assetId: undefined,
   evmAddress: undefined,
   rawUntypedPtr: undefined,

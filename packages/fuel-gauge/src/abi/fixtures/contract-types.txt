@@ -1,16 +1,34 @@
 import type { BigNumberish, Bytes, RawSlice, StdString, StrSlice } from 'fuels';
-import type { Option } from './common';
+import type { ArrayOfLength, Option } from './common';
+
+export enum EnumWithNative { Checked = 'Checked', Pending = 'Pending' };
 
 export type ConfigurablesInput = { U8_VALUE: BigNumberish, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<BigNumberish>, GENERIC_STRUCT_VALUE: StructDoubleGenericInput<StructDoubleGenericInput<BigNumberish, BigNumberish>, BigNumberish> };
 export type ConfigurablesOutput = { U8_VALUE: number, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<number>, GENERIC_STRUCT_VALUE: StructDoubleGenericOutput<StructDoubleGenericOutput<number, number>, number> };
 export type StructDoubleGenericInput<T1, T2> = { a: T1, b: T2 };
 export type StructDoubleGenericOutput<T1, T2> = { a: T1, b: T2 };
+export type StructSimpleInput = { a: boolean, b: BigNumberish };
+export type StructSimpleOutput = { a: boolean, b: number };
+export type StructSingleGenericInput<T> = { a: T };
+export type StructSingleGenericOutput<T> = { a: T };
 
 export interface AbiContractTypes {
     functions: {
         configurables: {
             inputs: [];
             output: ConfigurablesOutput;
+        };
+        types_array: {
+            inputs: [x: ArrayOfLength<BigNumberish, 4>];
+            output: ArrayOfLength<number, 4>;
+        };
+        types_array_struct: {
+            inputs: [x: ArrayOfLength<StructSimpleInput, 3>];
+            output: ArrayOfLength<StructSimpleOutput, 3>;
+        };
+        types_array_with_generic_struct: {
+            inputs: [x: ArrayOfLength<StructDoubleGenericInput<StructSingleGenericInput<BigNumberish>, string>, 2>];
+            output: ArrayOfLength<StructDoubleGenericOutput<StructSingleGenericOutput<BigNumberish>, string>, 2>;
         };
         types_b256: {
             inputs: [x: string];
@@ -28,6 +46,10 @@ export interface AbiContractTypes {
             inputs: [x: Bytes];
             output: Bytes;
         };
+        types_enum: {
+            inputs: [x: EnumWithNative];
+            output: EnumWithNative;
+        };
         types_raw_slice: {
             inputs: [x: RawSlice];
             output: RawSlice;
@@ -43,6 +65,18 @@ export interface AbiContractTypes {
         types_str_slice: {
             inputs: [x: StrSlice];
             output: StrSlice;
+        };
+        types_struct_generic: {
+            inputs: [x: StructSingleGenericInput<BigNumberish>];
+            output: StructSingleGenericOutput<number>;
+        };
+        types_struct_simple: {
+            inputs: [x: StructSimpleInput];
+            output: StructSimpleOutput;
+        };
+        types_struct_with_tuple: {
+            inputs: [x: StructSingleGenericInput<[boolean, BigNumberish]>];
+            output: StructSingleGenericOutput<[boolean, BigNumberish]>;
         };
         types_u16: {
             inputs: [x: BigNumberish];

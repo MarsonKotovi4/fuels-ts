@@ -1,6 +1,10 @@
 import type { {{fuelsTypeImports}} } from 'fuels';
 import type { {{commonTypeImports}} } from './common';
 
+{{#each enums}}
+export enum {{input}};
+{{/each}}
+
 {{#each types}}
 export type {{input}};
 export type {{output}};

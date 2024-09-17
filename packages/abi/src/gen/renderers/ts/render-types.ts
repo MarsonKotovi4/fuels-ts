@@ -78,11 +78,14 @@ export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
 
   const renderTemplate = compile(template, { strict: true, noEscape: true });
 
+  const enums = mTypes.filter((t) => t.tsType === 'enum');
+  const types = mTypes.filter((t) => t.tsType === 'type');
   const content = renderTemplate({
     fuelsTypeImports,
     commonTypeImports,
+    enums,
+    types,
     name,
-    types: mTypes,
     functions,
   });
   return {

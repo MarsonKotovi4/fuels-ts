@@ -177,23 +177,27 @@ abi MyContract {
     fn types_str_slice(x: str) -> str;
     fn types_raw_slice(x: raw_slice) -> raw_slice;
     fn types_std_string(x: String) -> String;
-/*
-
-
     fn types_array(x: [u8; 4]) -> [u8; 4];
     fn types_array_struct(x: [StructSimple; 3]) -> [StructSimple; 3];
     fn types_array_with_generic_struct(
         x: [StructDoubleGeneric<StructSingleGeneric<u64>, str[1]>; 2],
     ) -> [StructDoubleGeneric<StructSingleGeneric<u64>, str[1]>; 2];
-
     fn types_struct_simple(x: StructSimple) -> StructSimple;
     fn types_struct_generic(x: StructSingleGeneric<u8>) -> StructSingleGeneric<u8>;
     fn types_struct_with_tuple(
         x: StructSingleGeneric<(bool, u64)>,
     ) -> StructSingleGeneric<(bool, u64)>;
+
+    fn types_enum(x: EnumWithNative) -> EnumWithNative;
+/*
+
+
+
+
     fn types_struct_double_generic(
         x: StructGenericWithEnum<u8, u16>,
     ) -> StructGenericWithEnum<u8, u16>;
+
     fn type_struct_external(x: ExternalStruct) -> ExternalStruct;
     fn types_struct_with_implicit_generics(
         x: StructWithImplicitGenerics<b256, u8>,
@@ -215,7 +219,6 @@ abi MyContract {
     fn types_tuple_with_native_types(x: (AssetId, AssetId, bool)) -> (AssetId, AssetId, bool);
     fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets;
 
-    fn types_enum(x: EnumWithNative) -> EnumWithNative;
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
     fn types_enum_with_vector(x: EnumWithVector) -> EnumWithVector;
     fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16>;
@@ -305,15 +308,6 @@ impl MyContract for Contract {
     fn types_std_string(x: String) -> String {
         x
     }
-/*
-
-
-
-
-    fn types_asset_id(x: AssetId) -> AssetId {
-        x
-    }
-
     fn types_array(x: [u8; 4]) -> [u8; 4] {
         x
     }
@@ -325,6 +319,36 @@ impl MyContract for Contract {
     ) -> [StructDoubleGeneric<StructSingleGeneric<u64>, str[1]>; 2] {
         x
     }
+    fn types_struct_simple(x: StructSimple) -> StructSimple {
+        x
+    }
+    fn types_struct_generic(x: StructSingleGeneric<u8>) -> StructSingleGeneric<u8> {
+        x
+    }
+    fn types_struct_with_tuple(
+        x: StructSingleGeneric<(bool, u64)>,
+    ) -> StructSingleGeneric<(bool, u64)> {
+        x
+    }
+
+    fn types_enum(x: EnumWithNative) -> EnumWithNative {
+        x
+    }
+/*
+
+
+    fn types_struct_double_generic(
+        x: StructGenericWithEnum<u8, u16>,
+    ) -> StructGenericWithEnum<u8, u16> {
+        x
+    }
+
+    fn types_asset_id(x: AssetId) -> AssetId {
+        x
+    }
+
+
+
     fn types_tuple(x: (u8, u8, u8)) -> (u8, u8, u8) {
         (x.0, x.1, x.2)
     }
@@ -339,17 +363,8 @@ impl MyContract for Contract {
     fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets {
         (x.0, x.1, x.2)
     }
-    fn types_struct_simple(x: StructSimple) -> StructSimple {
-        x
-    }
-    fn types_struct_generic(x: StructSingleGeneric<u8>) -> StructSingleGeneric<u8> {
-        x
-    }
-    fn types_struct_with_tuple(
-        x: StructSingleGeneric<(bool, u64)>,
-    ) -> StructSingleGeneric<(bool, u64)> {
-        x
-    }
+
+
     fn types_struct_with_nested_array(x: StructWithNestedArray) -> StructWithNestedArray {
         x
     }
@@ -368,9 +383,7 @@ impl MyContract for Contract {
     fn types_struct_with_single_option(x: StructWithSingleOption) -> StructWithSingleOption {
         x
     }
-    fn types_enum(x: EnumWithNative) -> EnumWithNative {
-        x
-    }
+
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType {
         x
     }
@@ -454,11 +467,7 @@ impl MyContract for Contract {
     fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16> {
         x
     }
-    fn types_struct_double_generic(
-        x: StructGenericWithEnum<u8, u16>,
-    ) -> StructGenericWithEnum<u8, u16> {
-        x
-    }
+
     fn types_void(x: ()) -> () {
         x
     }
