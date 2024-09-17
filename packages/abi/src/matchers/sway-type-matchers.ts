@@ -9,6 +9,7 @@ export type SwayType =
   | 'b256'
   | 'generic'
   | 'string'
+  | 'str'
   | 'stdString'
   | 'option'
   | 'result'
@@ -40,6 +41,8 @@ const generic: Matcher = (type) => GENERIC_REGEX.test(type);
 
 export const STRING_REGEX = /^str\[(?<length>[0-9]+)\]/;
 const string: Matcher = (type) => STRING_REGEX.test(type);
+
+const str: Matcher = (type) => type === 'str';
 
 export const TUPLE_REGEX = /^\((?<items>.+)\)$/m;
 const tuple: Matcher = (type) => TUPLE_REGEX.test(type);
@@ -77,6 +80,7 @@ export const swayTypeMatchers: Record<SwayType, Matcher> = {
   u64,
   u256,
   b256,
+  str,
 
   string,
   tuple,

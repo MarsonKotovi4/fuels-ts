@@ -28,6 +28,7 @@ const metadataTypeFilter = createMatcher<boolean>({
   result: false,
   enum: true,
   struct: true,
+  str: false,
   b512: false,
   bytes: false,
   vector: false,
@@ -54,7 +55,9 @@ export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
         .concat(Object.values(cTypes).flatMap((ct) => ct.fuelsTypeImports))
         .filter((x) => x !== undefined)
     ),
-  ].join(', ');
+  ]
+    .sort()
+    .join(', ');
 
   const commonTypeImports = [
     ...new Set(
@@ -63,7 +66,9 @@ export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
         .concat(Object.values(cTypes).flatMap((ct) => ct.commonTypeImports))
         .filter((x) => x !== undefined)
     ),
-  ].join(', ');
+  ]
+    .sort()
+    .join(', ');
 
   const functions = abi.functions.map((fn) => ({
     name: fn.name,

@@ -1,4 +1,4 @@
-import type { BigNumberish, Bytes } from 'fuels';
+import type { BigNumberish, Bytes, RawSlice, StdString, StrSlice } from 'fuels';
 import type { Option } from './common';
 
 export type ConfigurablesInput = { U8_VALUE: BigNumberish, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<BigNumberish>, GENERIC_STRUCT_VALUE: StructDoubleGenericInput<StructDoubleGenericInput<BigNumberish, BigNumberish>, BigNumberish> };
@@ -27,6 +27,22 @@ export interface AbiContractTypes {
         types_bytes: {
             inputs: [x: Bytes];
             output: Bytes;
+        };
+        types_raw_slice: {
+            inputs: [x: RawSlice];
+            output: RawSlice;
+        };
+        types_std_string: {
+            inputs: [x: StdString];
+            output: StdString;
+        };
+        types_str: {
+            inputs: [x: string];
+            output: string;
+        };
+        types_str_slice: {
+            inputs: [x: StrSlice];
+            output: StrSlice;
         };
         types_u16: {
             inputs: [x: BigNumberish];

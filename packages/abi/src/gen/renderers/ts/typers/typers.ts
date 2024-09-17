@@ -225,6 +225,26 @@ const bytesTyperReturn: TyperReturn = {
 };
 export const bytesTyper: Typer = () => bytesTyperReturn;
 
+const strTyperReturn: TyperReturn = {
+  input: 'StrSlice',
+  output: 'StrSlice',
+  fuelsTypeImports: ['StrSlice'],
+};
+export const strTyper: Typer = () => strTyperReturn;
+
+const rawSliceTyperReturn: TyperReturn = {
+  input: 'RawSlice',
+  output: 'RawSlice',
+  fuelsTypeImports: ['RawSlice'],
+};
+export const rawSliceTyper = () => rawSliceTyperReturn;
+
+const stdStringTyperReturn: TyperReturn = {
+  input: 'StdString',
+  output: 'StdString',
+  fuelsTypeImports: ['StdString'],
+};
+export const stdStringTyper = () => stdStringTyperReturn;
 export const typerMatcher = createMatcher<Typer | undefined>({
   bool: boolTyper,
   u8: u8Typer,
@@ -242,12 +262,13 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   vector: vectorTyper,
   option: optionTyper,
   bytes: bytesTyper,
+  str: strTyper,
+  rawUntypedSlice: rawSliceTyper,
+  stdString: stdStringTyper,
   void: undefined,
-  stdString: undefined,
   result: undefined,
   enum: undefined,
   assetId: undefined,
   evmAddress: undefined,
   rawUntypedPtr: undefined,
-  rawUntypedSlice: undefined,
 });
