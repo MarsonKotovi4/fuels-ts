@@ -64,7 +64,7 @@ const vector: Matcher = (type) => type === 'struct std::vec::Vec';
 const option: Matcher = (type) => type === 'enum std::option::Option';
 const result: Matcher = (type) => type === 'enum std::result::Result';
 
-export const ENUM_REGEX = /^enum (?<name>.+)$/m;
+export const ENUM_REGEX = /^enum (.+::)?(?<name>.+)$/m;
 const enumMatcher: Matcher = (type) => !option(type) && !result(type) && ENUM_REGEX.test(type);
 
 const rawUntypedPtr: Matcher = (type) => type === 'raw untyped ptr';

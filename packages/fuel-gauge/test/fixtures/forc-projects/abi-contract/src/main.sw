@@ -190,6 +190,10 @@ abi MyContract {
 
     fn types_enum(x: EnumWithNative) -> EnumWithNative;
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
+    fn types_enum_with_vector(x: EnumWithVector) -> EnumWithVector;
+    fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16>;
+    fn types_enum_external(x: ExternalEnum) -> ExternalEnum;
+
 /*
 
 
@@ -220,10 +224,7 @@ abi MyContract {
     fn types_tuple_with_native_types(x: (AssetId, AssetId, bool)) -> (AssetId, AssetId, bool);
     fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets;
 
-    fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
-    fn types_enum_with_vector(x: EnumWithVector) -> EnumWithVector;
-    fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16>;
-    fn types_enum_external(x: ExternalEnum) -> ExternalEnum;
+
     fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs;
 
     fn types_vector_u8(x: Vec<u8>) -> Vec<u8>;
@@ -338,6 +339,15 @@ impl MyContract for Contract {
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType {
         x
     }
+    fn types_enum_with_vector(x: EnumWithVector) -> EnumWithVector {
+        x
+    }
+    fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16> {
+        x
+    }
+    fn types_enum_external(x: ExternalEnum) -> ExternalEnum {
+        x
+    }
 /*
 
 
@@ -389,9 +399,7 @@ impl MyContract for Contract {
     }
 
 
-    fn types_enum_with_vector(x: EnumWithVector) -> EnumWithVector {
-        x
-    }
+
     fn types_vector_u8(x: Vec<u8>) -> Vec<u8> {
         x
     }
@@ -443,9 +451,7 @@ impl MyContract for Contract {
     fn type_identity(x: Identity) -> Identity {
         x
     }
-    fn types_enum_external(x: ExternalEnum) -> ExternalEnum {
-        x
-    }
+
     fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs {
         x
     }
@@ -466,9 +472,7 @@ impl MyContract for Contract {
     fn types_struct_with_array_of_enums(x: StructWithEnumArray) -> StructWithEnumArray {
         x
     }
-    fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16> {
-        x
-    }
+
 
     fn types_void(x: ()) -> () {
         x

@@ -101,7 +101,7 @@ function mapTypeParameters(
 
 function mapStructAsReference(abiType: AbiType): TyperReturn {
   const { swayType, metadata } = abiType;
-  const typeName = STRUCT_REGEX.exec(swayType)?.[1] ?? ENUM_REGEX.exec(swayType)?.[1];
+  const typeName = STRUCT_REGEX.exec(swayType)?.[1] ?? ENUM_REGEX.exec(swayType)?.[2];
 
   const inputName = `${typeName}Input`;
   const outputName = `${typeName}Output`;
@@ -145,7 +145,7 @@ export const structTyper: Typer = (abiType) => {
   }
 
   const typeName =
-    STRUCT_REGEX.exec(abiType.swayType)?.[1] ?? ENUM_REGEX.exec(abiType.swayType)?.[1];
+    STRUCT_REGEX.exec(abiType.swayType)?.[1] ?? ENUM_REGEX.exec(abiType.swayType)?.[2];
 
   function wrapContent(content: TyperReturn): TyperReturn {
     if (!ENUM_REGEX.test(abiType.swayType)) {
@@ -266,7 +266,7 @@ function isNativeEnum(abiType: AbiType | AbiTypeMetadata) {
 
 export const enumTyper: Typer = (abiType) => {
   if (isNativeEnum(abiType)) {
-    const typeName = ENUM_REGEX.exec(abiType.swayType)![1];
+    const typeName = ENUM_REGEX.exec(abiType.swayType)![2];
 
     if ('concreteTypeId' in abiType) {
       return { input: typeName, output: typeName };

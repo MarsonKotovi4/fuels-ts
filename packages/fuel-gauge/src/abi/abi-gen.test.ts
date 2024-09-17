@@ -32,6 +32,13 @@ describe('AbiGen', () => {
     expect(res).toEqual(typesContent);
   });
 
+  test('regex', () => {
+    const ENUM_REGEX = /^enum (.*::)?(?<name>.+)$/m;
+
+    console.log(ENUM_REGEX.exec('enum GenericEnum')?.[2]);
+    console.log(ENUM_REGEX.exec('enum abi-library::ExternalEnum')?.[2]);
+  });
+
   // test('script', () => {
   //   const { abiContents } = getAbiForcProject(AbiProjectsEnum.ABI_SCRIPT);
   //   log(abiContents);

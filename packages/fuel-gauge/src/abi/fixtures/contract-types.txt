@@ -2,11 +2,16 @@ import type { BigNumberish, Bytes, RawSlice, StdString, StrSlice } from 'fuels';
 import type { ArrayOfLength, Enum, Option } from './common';
 
 export enum EnumWithNative { Checked = 'Checked', Pending = 'Pending' };
+export enum ExternalEnum { A = 'A', B = 'B' };
 
 export type ConfigurablesInput = { U8_VALUE: BigNumberish, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<BigNumberish>, GENERIC_STRUCT_VALUE: StructDoubleGenericInput<StructDoubleGenericInput<BigNumberish, BigNumberish>, BigNumberish> };
 export type ConfigurablesOutput = { U8_VALUE: number, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<number>, GENERIC_STRUCT_VALUE: StructDoubleGenericOutput<StructDoubleGenericOutput<number, number>, number> };
+export type EnumDoubleGenericInput<T1, T2> = Enum<{ a: T1, b: T2 }>;
+export type EnumDoubleGenericOutput<T1, T2> = EnumDoubleGenericInput<T1, T2>;
 export type EnumWithBuiltinTypeInput = Enum<{ a: boolean, b: BigNumberish }>;
 export type EnumWithBuiltinTypeOutput = EnumWithBuiltinTypeInput;
+export type EnumWithVectorInput = Enum<{ num: BigNumberish, vec: BigNumberish[] }>;
+export type EnumWithVectorOutput = Enum<{ num: number, vec: number[] }>;
 export type StructDoubleGenericInput<T1, T2> = { a: T1, b: T2 };
 export type StructDoubleGenericOutput<T1, T2> = StructDoubleGenericInput<T1, T2>;
 export type StructSimpleInput = { a: boolean, b: BigNumberish };
@@ -52,9 +57,21 @@ export interface AbiContractTypes {
             inputs: [x: EnumWithNative];
             output: EnumWithNative;
         };
+        types_enum_external: {
+            inputs: [x: ExternalEnum];
+            output: ExternalEnum;
+        };
         types_enum_with_builtin_type: {
             inputs: [x: EnumWithBuiltinTypeInput];
             output: EnumWithBuiltinTypeOutput;
+        };
+        types_enum_with_vector: {
+            inputs: [x: EnumWithVectorInput];
+            output: EnumWithVectorOutput;
+        };
+        types_generic_enum: {
+            inputs: [x: EnumDoubleGenericInput<BigNumberish, BigNumberish>];
+            output: EnumDoubleGenericOutput<number, number>;
         };
         types_raw_slice: {
             inputs: [x: RawSlice];
