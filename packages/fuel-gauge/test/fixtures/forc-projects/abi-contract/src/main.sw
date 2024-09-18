@@ -190,6 +190,7 @@ abi MyContract {
     fn types_struct_double_generic(
         x: StructGenericWithEnum<u8, u16>,
     ) -> StructGenericWithEnum<u8, u16>;
+    fn types_struct_external(x: ExternalStruct) -> ExternalStruct;
 
     fn types_enum(x: EnumWithNative) -> EnumWithNative;
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
@@ -205,7 +206,6 @@ abi MyContract {
 
 
 
-    fn type_struct_external(x: ExternalStruct) -> ExternalStruct;
     fn types_struct_with_implicit_generics(
         x: StructWithImplicitGenerics<b256, u8>,
     ) -> StructWithImplicitGenerics<b256, u8>;
@@ -333,10 +333,12 @@ impl MyContract for Contract {
     ) -> StructSingleGeneric<(bool, u64)> {
         x
     }
-
     fn types_struct_double_generic(
         x: StructGenericWithEnum<u8, u16>,
     ) -> StructGenericWithEnum<u8, u16> {
+        x
+    }
+    fn types_struct_external(x: ExternalStruct) -> ExternalStruct {
         x
     }
 
@@ -457,9 +459,7 @@ impl MyContract for Contract {
     }
 
 
-    fn type_struct_external(x: ExternalStruct) -> ExternalStruct {
-        x
-    }
+
     fn types_struct_with_implicit_generics(
         x: StructWithImplicitGenerics<b256, u8>,
     ) -> StructWithImplicitGenerics<b256, u8> {

@@ -14,6 +14,8 @@ export type EnumWithStructsInput = Enum<{ a: EnumWithNative, b: StructSimpleInpu
 export type EnumWithStructsOutput = Enum<{ a: EnumWithNative, b: StructSimpleOutput, c: EnumDoubleGenericOutput<BigNumberish, StructSimpleOutput> }>;
 export type EnumWithVectorInput = Enum<{ num: BigNumberish, vec: BigNumberish[] }>;
 export type EnumWithVectorOutput = Enum<{ num: number, vec: number[] }>;
+export type ExternalStructInput = { value: BigNumberish };
+export type ExternalStructOutput = ExternalStructInput;
 export type StructDoubleGenericInput<T1, T2> = { a: T1, b: T2 };
 export type StructDoubleGenericOutput<T1, T2> = StructDoubleGenericInput<T1, T2>;
 export type StructGenericWithEnumInput<T1, T2> = { a: T1, b: EnumDoubleGenericInput<T1, T2> };
@@ -100,6 +102,10 @@ export interface AbiContractTypes {
         types_struct_double_generic: {
             inputs: [x: StructGenericWithEnumInput<BigNumberish, BigNumberish>];
             output: StructGenericWithEnumOutput<number, number>;
+        };
+        types_struct_external: {
+            inputs: [x: ExternalStructInput];
+            output: ExternalStructOutput;
         };
         types_struct_generic: {
             inputs: [x: StructSingleGenericInput<BigNumberish>];

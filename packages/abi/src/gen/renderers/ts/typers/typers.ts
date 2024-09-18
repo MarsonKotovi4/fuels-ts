@@ -103,7 +103,7 @@ function mapTypeParameters(
 
 function mapStructAsReference(abiType: AbiType | AbiTypeMetadata): TyperReturn {
   const { swayType } = abiType;
-  const typeName = STRUCT_REGEX.exec(swayType)?.[1] ?? ENUM_REGEX.exec(swayType)?.[2];
+  const typeName = STRUCT_REGEX.exec(swayType)?.[2] ?? ENUM_REGEX.exec(swayType)?.[2];
   const inputName = `${typeName}Input`;
   const outputName = `${typeName}Output`;
 
@@ -157,12 +157,11 @@ export const structTyper: Typer = (abiType, opts) => {
   }
 
   if (opts?.asReference) {
-    console.log(opts);
     return mapStructAsReference(abiType);
   }
 
   const typeName =
-    STRUCT_REGEX.exec(abiType.swayType)?.[1] ?? ENUM_REGEX.exec(abiType.swayType)?.[2];
+    STRUCT_REGEX.exec(abiType.swayType)?.[2] ?? ENUM_REGEX.exec(abiType.swayType)?.[2];
 
   const { components } = abiType;
 
