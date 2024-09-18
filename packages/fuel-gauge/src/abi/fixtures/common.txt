@@ -6,6 +6,6 @@ export type FunctionMapper<T extends Types['functions']> = {
   [K in keyof T]: InvokeFunction<T[K]['inputs'], T[K]['output']>;
 };
 
-export type ArrayOfLength<T, N extends number, R extends unknown[] = []> = R['length'] extends N
-  ? R
-  : ArrayOfLength<T, N, [T, ...R]>;
+export type ArrayOfLength<T, Length extends number, Arr extends unknown[] = []> = R['length'] extends Length
+  ? Arr
+  : ArrayOfLength<T, Length, [T, ...Arr]>;

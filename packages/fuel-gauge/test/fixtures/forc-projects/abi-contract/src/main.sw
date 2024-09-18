@@ -238,33 +238,18 @@ abi MyContract {
     fn multi_arg_u64_struct(x: u64, y: StructSimple) -> (u64, StructSimple);
     fn multi_arg_str_str(x: str[5], y: str[5]) -> (str[5], str[5]);
     fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>);
-/*
 
-
-
-
-
-
-
-    fn types_struct_with_multiple_struct_params(x: StructA, y: StructB, z: StructC) -> bool;
-    fn types_struct_with_complex_nested_struct(x: StructD<u32, u32, StructF<Vec<StructG>>>) -> bool;
-
-
-    fn types_tuple_with_native_types(x: (AssetId, AssetId, bool)) -> (AssetId, AssetId, bool);
-    fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets;
-
-
-
-
-
-
-    fn type_identity(x: Identity) -> Identity;
-    fn type_address(x: Address) -> Address;
-    fn type_contract_id(x: ContractId) -> ContractId;
     fn types_asset_id(x: AssetId) -> AssetId;
+    fn types_identity(x: Identity) -> Identity;
     fn types_evm_address(x: EvmAddress) -> EvmAddress;
 
-
+/*
+    fn types_struct_with_multiple_struct_params(x: StructA, y: StructB, z: StructC) -> bool;
+    fn types_struct_with_complex_nested_struct(x: StructD<u32, u32, StructF<Vec<StructG>>>) -> bool;
+    fn types_tuple_with_native_types(x: (AssetId, AssetId, bool)) -> (AssetId, AssetId, bool);
+    fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets;
+    fn type_address(x: Address) -> Address;
+    fn type_contract_id(x: ContractId) -> ContractId;
 */
 }
 
@@ -481,13 +466,19 @@ impl MyContract for Contract {
     fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>) {
         (x, y, z)
     }
+    fn types_identity(x: Identity) -> Identity {
+        x
+    }
+    fn types_asset_id(x: AssetId) -> AssetId {
+        x
+    }
+    fn types_evm_address(x: EvmAddress) -> EvmAddress {
+        EvmAddress::from(0x0606060606060606060606060606060606060606060606060606060606060606)
+    }
 
 /*
 
 
-    fn types_asset_id(x: AssetId) -> AssetId {
-        x
-    }
 
 
 
@@ -514,9 +505,7 @@ impl MyContract for Contract {
 
 
 
-    fn types_evm_address(x: EvmAddress) -> EvmAddress {
-        EvmAddress::from(0x0606060606060606060606060606060606060606060606060606060606060606)
-    }
+
 
 
 
@@ -526,9 +515,6 @@ impl MyContract for Contract {
         x
     }
     fn type_contract_id(x: ContractId) -> ContractId {
-        x
-    }
-    fn type_identity(x: Identity) -> Identity {
         x
     }
 

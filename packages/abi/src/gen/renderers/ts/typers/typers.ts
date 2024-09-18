@@ -321,10 +321,15 @@ export const resultTyper: Typer = (abiType) => {
   };
 };
 
-export const voidTyper: Typer = () => ({
-  input: 'undefined',
-  output: 'void',
-});
+const voidTyperReturn: TyperReturn = { input: 'undefined', output: 'void' };
+export const voidTyper: Typer = () => voidTyperReturn;
+
+const evmAddressTyperReturn: TyperReturn = {
+  input: 'EvmAddress',
+  output: 'EvmAddress',
+  fuelsTypeImports: ['EvmAddress'],
+};
+export const evmAddressTyper: Typer = () => evmAddressTyperReturn;
 
 export const typerMatcher = createMatcher<Typer | undefined>({
   bool: boolTyper,
@@ -349,7 +354,7 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   enum: enumTyper,
   result: resultTyper,
   void: voidTyper,
-  assetId: undefined,
-  evmAddress: undefined,
+  assetId: structTyper,
+  evmAddress: evmAddressTyper,
   rawUntypedPtr: undefined,
 });

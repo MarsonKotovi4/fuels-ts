@@ -1,11 +1,17 @@
-import type { BigNumberish, Bytes, RawSlice, StdString, StrSlice } from 'fuels';
+import type { BigNumberish, Bytes, EvmAddress, RawSlice, StdString, StrSlice } from 'fuels';
 import type { ArrayOfLength, Enum, Option, Result } from './common';
 
 export enum EnumWithNative { Checked = 'Checked', Pending = 'Pending' };
 export enum ExternalEnum { A = 'A', B = 'B' };
 
+export type AddressInput = { bits: string };
+export type AddressOutput = AddressInput;
+export type AssetIdInput = { bits: string };
+export type AssetIdOutput = AssetIdInput;
 export type ConfigurablesInput = { U8_VALUE: BigNumberish, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<BigNumberish>, GENERIC_STRUCT_VALUE: StructDoubleGenericInput<StructDoubleGenericInput<BigNumberish, BigNumberish>, BigNumberish> };
 export type ConfigurablesOutput = { U8_VALUE: number, BOOL_VALUE: boolean, B256_VALUE: string, OPTION_U8_VALUE: Option<number>, GENERIC_STRUCT_VALUE: StructDoubleGenericOutput<StructDoubleGenericOutput<number, number>, number> };
+export type ContractIdInput = { bits: string };
+export type ContractIdOutput = ContractIdInput;
 export type EnumDoubleGenericInput<T1, T2> = Enum<{ a: T1, b: T2 }>;
 export type EnumDoubleGenericOutput<T1, T2> = EnumDoubleGenericInput<T1, T2>;
 export type EnumWithBuiltinTypeInput = Enum<{ a: boolean, b: BigNumberish }>;
@@ -16,6 +22,8 @@ export type EnumWithVectorInput = Enum<{ num: BigNumberish, vec: BigNumberish[] 
 export type EnumWithVectorOutput = Enum<{ num: number, vec: number[] }>;
 export type ExternalStructInput = { value: BigNumberish };
 export type ExternalStructOutput = ExternalStructInput;
+export type IdentityInput = Enum<{ Address: AddressInput, ContractId: ContractIdInput }>;
+export type IdentityOutput = Enum<{ Address: AddressOutput, ContractId: ContractIdOutput }>;
 export type StructDoubleGenericInput<T1, T2> = { a: T1, b: T2 };
 export type StructDoubleGenericOutput<T1, T2> = StructDoubleGenericInput<T1, T2>;
 export type StructGenericWithEnumInput<T1, T2> = { a: T1, b: EnumDoubleGenericInput<T1, T2> };
@@ -93,6 +101,10 @@ export interface AbiContractTypes {
             inputs: [x: ArrayOfLength<StructDoubleGenericInput<StructSingleGenericInput<BigNumberish>, string>, 2>];
             output: ArrayOfLength<StructDoubleGenericOutput<StructSingleGenericOutput<BigNumberish>, string>, 2>;
         };
+        types_asset_id: {
+            inputs: [x: AssetIdInput];
+            output: AssetIdOutput;
+        };
         types_b256: {
             inputs: [x: string];
             output: string;
@@ -129,9 +141,17 @@ export interface AbiContractTypes {
             inputs: [x: EnumWithVectorInput];
             output: EnumWithVectorOutput;
         };
+        types_evm_address: {
+            inputs: [x: EvmAddress];
+            output: EvmAddress;
+        };
         types_generic_enum: {
             inputs: [x: EnumDoubleGenericInput<BigNumberish, BigNumberish>];
             output: EnumDoubleGenericOutput<number, number>;
+        };
+        types_identity: {
+            inputs: [x: IdentityInput];
+            output: IdentityOutput;
         };
         types_option: {
             inputs: [x?: Option<BigNumberish>];

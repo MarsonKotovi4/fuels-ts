@@ -35,7 +35,7 @@ const metadataTypeFilter = createMatcher<boolean>({
   vector: false,
   tuple: false,
   array: false,
-  assetId: false,
+  assetId: true,
   evmAddress: false,
   rawUntypedPtr: false,
   rawUntypedSlice: false,
