@@ -223,7 +223,8 @@ abi MyContract {
     fn types_option(x: Option<u8>) -> Option<u8>;
     fn types_option_geo(x: Option<StructSimple>) -> Option<StructSimple>;
     fn types_result(x: Result<u64, u32>) -> Result<u64, str[10]>;
-
+    fn types_void(x: ()) -> ();
+    fn types_void_then_value(x: (), y: u8) -> ();
 /*
 
 
@@ -250,8 +251,6 @@ abi MyContract {
     fn types_asset_id(x: AssetId) -> AssetId;
     fn types_evm_address(x: EvmAddress) -> EvmAddress;
 
-    fn types_void(x: ()) -> ();
-    fn types_void_then_value(x: (), y: u8) -> ();
     fn types_value_then_void(x: u8, y: ()) -> ();
     fn types_value_then_void_then_value(x: u8, y: (), z: u8) -> ();
     fn types_value_then_value_then_void_then_void(x: u8, y: u8, z: (), a: ()) -> ();
@@ -438,6 +437,13 @@ impl MyContract for Contract {
             Err(MyContractError::DivisionByZero) => Err(__to_str_array("DivisError")),
         }
     }
+
+    fn types_void(x: ()) -> () {
+        x
+    }
+    fn types_void_then_value(x: (), y: u8) -> () {
+        ()
+    }
 /*
 
 
@@ -495,12 +501,6 @@ impl MyContract for Contract {
 
 
 
-    fn types_void(x: ()) -> () {
-        x
-    }
-    fn types_void_then_value(x: (), y: u8) -> () {
-        ()
-    }
     fn types_value_then_void(x: u8, y: ()) -> () {
         ()
     }

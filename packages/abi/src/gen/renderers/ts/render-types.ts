@@ -1,6 +1,7 @@
 import { compile } from 'handlebars';
 
-import { createMatcher } from '../../../matchers/sway-type-matchers';
+import { createMatcher, swayTypeMatchers } from '../../../matchers/sway-type-matchers';
+import type { AbiFunctionInput } from '../../../parser';
 import type { AbiGenResult } from '../../abi-gen';
 import type { ProgramDetails } from '../../utils/get-program-details';
 
@@ -80,11 +81,26 @@ export function renderTypes({ name, abi }: ProgramDetails): RenderTypesOutput {
     .sort()
     .join(', ');
 
-  const functions = abi.functions.map((fn) => ({
-    name: fn.name,
-    inputs: `[${fn.inputs.map((i) => `${i.name}: ${cTypes[i.type.concreteTypeId].input}`).join(', ')}]`,
-    output: cTypes[fn.output.concreteTypeId].output,
-  }));
+  const functions = abi.functions.map((fn) => {
+    let isMandatory = false;
+    const inputs = fn.inputs.reduceRight<(AbiFunctionInput & { isOptional: boolean })[]>(
+      (result, input) => {
+        const isTypeMandatory =
+          !swayTypeMatchers.void(input.type.swayType) &&
+          !swayTypeMatchers.option(input.type.swayType);
+
+        isMandatory = isMandatory || isTypeMandatory;
+        return [{ ...input, isOptional: !isMandatory }, ...result];
+      },
+      []
+    );
+
+    return {
+      name: fn.name,
+      inputs: `[${inputs.map((i) => `${i.name}${i.isOptional ? '?' : ''}: ${cTypes[i.type.concreteTypeId].input}`).join(', ')}]`,
+      output: cTypes[fn.output.concreteTypeId].output,
+    };
+  });
 
   const renderTemplate = compile(template, { strict: true, noEscape: true });
 

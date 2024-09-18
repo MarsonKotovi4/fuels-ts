@@ -102,11 +102,11 @@ export interface AbiContractTypes {
             output: EnumDoubleGenericOutput<number, number>;
         };
         types_option: {
-            inputs: [x: Option<BigNumberish>];
+            inputs: [x?: Option<BigNumberish>];
             output: Option<number>;
         };
         types_option_geo: {
-            inputs: [x: Option<StructSimpleInput>];
+            inputs: [x?: Option<StructSimpleInput>];
             output: Option<StructSimpleOutput>;
         };
         types_raw_slice: {
@@ -232,6 +232,14 @@ export interface AbiContractTypes {
         types_vector_u8: {
             inputs: [x: BigNumberish[]];
             output: number[];
+        };
+        types_void: {
+            inputs: [x?: undefined];
+            output: void;
+        };
+        types_void_then_value: {
+            inputs: [x: undefined, y: BigNumberish];
+            output: void;
         };
     }
 }

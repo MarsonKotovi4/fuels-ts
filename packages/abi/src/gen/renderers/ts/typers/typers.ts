@@ -321,6 +321,11 @@ export const resultTyper: Typer = (abiType) => {
   };
 };
 
+export const voidTyper: Typer = () => ({
+  input: 'undefined',
+  output: 'void',
+});
+
 export const typerMatcher = createMatcher<Typer | undefined>({
   bool: boolTyper,
   u8: u8Typer,
@@ -343,7 +348,7 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   stdString: stdStringTyper,
   enum: enumTyper,
   result: resultTyper,
-  void: undefined,
+  void: voidTyper,
   assetId: undefined,
   evmAddress: undefined,
   rawUntypedPtr: undefined,
