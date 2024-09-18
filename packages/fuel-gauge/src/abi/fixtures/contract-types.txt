@@ -89,6 +89,14 @@ export interface AbiContractTypes {
             inputs: [x: BigNumberish[], y: BigNumberish[]];
             output: [number[], number[]];
         };
+        types_address: {
+            inputs: [x: AddressInput];
+            output: AddressOutput;
+        };
+        types_alias_tuple_with_native_types: {
+            inputs: [x: [AssetIdInput, AssetIdInput, boolean]];
+            output: [AssetIdOutput, AssetIdOutput, boolean];
+        };
         types_array: {
             inputs: [x: ArrayOfLength<BigNumberish, 4>];
             output: ArrayOfLength<number, 4>;
@@ -120,6 +128,10 @@ export interface AbiContractTypes {
         types_bytes: {
             inputs: [x: Bytes];
             output: Bytes;
+        };
+        types_contract_id: {
+            inputs: [x: ContractIdInput];
+            output: ContractIdOutput;
         };
         types_enum: {
             inputs: [x: EnumWithNative];
@@ -240,6 +252,10 @@ export interface AbiContractTypes {
         types_tuple_complex: {
             inputs: [x: [BigNumberish, StructSingleGenericInput<StructSingleGenericInput<BigNumberish>>, string]];
             output: [number, StructSingleGenericOutput<StructSingleGenericOutput<BigNumberish>>, string];
+        };
+        types_tuple_with_native_types: {
+            inputs: [x: [AssetIdInput, AssetIdInput, boolean]];
+            output: [AssetIdOutput, AssetIdOutput, boolean];
         };
         types_u16: {
             inputs: [x: BigNumberish];
