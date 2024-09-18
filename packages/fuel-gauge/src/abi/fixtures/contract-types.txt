@@ -241,6 +241,18 @@ export interface AbiContractTypes {
             inputs: [x: BigNumberish];
             output: number;
         };
+        types_value_then_value_then_void_then_void: {
+            inputs: [x: BigNumberish, y: BigNumberish, z?: undefined, a?: undefined];
+            output: void;
+        };
+        types_value_then_void: {
+            inputs: [x: BigNumberish, y?: undefined];
+            output: void;
+        };
+        types_value_then_void_then_value: {
+            inputs: [x: BigNumberish, y: undefined, z: BigNumberish];
+            output: void;
+        };
         types_vector_boolean: {
             inputs: [x: boolean[]];
             output: boolean[];

@@ -226,6 +226,10 @@ abi MyContract {
     fn types_void(x: ()) -> ();
     fn types_void_then_value(x: (), y: u8) -> ();
 
+    fn types_value_then_void(x: u8, y: ()) -> ();
+    fn types_value_then_void_then_value(x: u8, y: (), z: u8) -> ();
+    fn types_value_then_value_then_void_then_void(x: u8, y: u8, z: (), a: ()) -> ();
+
     fn multi_arg_u64_u64(x: u64, y: u64) -> u64;
     fn multi_arg_b256_bool(x: b256, y: bool) -> (b256, bool);
     fn multi_arg_vector_vector(x: Vec<u8>, y: Vec<u8>) -> (Vec<u8>, Vec<u8>);
@@ -259,10 +263,6 @@ abi MyContract {
     fn type_contract_id(x: ContractId) -> ContractId;
     fn types_asset_id(x: AssetId) -> AssetId;
     fn types_evm_address(x: EvmAddress) -> EvmAddress;
-
-    fn types_value_then_void(x: u8, y: ()) -> ();
-    fn types_value_then_void_then_value(x: u8, y: (), z: u8) -> ();
-    fn types_value_then_value_then_void_then_void(x: u8, y: u8, z: (), a: ()) -> ();
 
 
 */
@@ -447,6 +447,16 @@ impl MyContract for Contract {
         ()
     }
 
+    fn types_value_then_void(x: u8, y: ()) -> () {
+        ()
+    }
+    fn types_value_then_void_then_value(x: u8, y: (), z: u8) -> () {
+        ()
+    }
+    fn types_value_then_value_then_void_then_void(x: u8, y: u8, z: (), a: ()) -> () {
+        ()
+    }
+
     fn multi_arg_u64_u64(x: u64, y: u64) -> u64 {
         0
     }
@@ -528,16 +538,6 @@ impl MyContract for Contract {
 
 
 
-
-    fn types_value_then_void(x: u8, y: ()) -> () {
-        ()
-    }
-    fn types_value_then_void_then_value(x: u8, y: (), z: u8) -> () {
-        ()
-    }
-    fn types_value_then_value_then_void_then_void(x: u8, y: u8, z: (), a: ()) -> () {
-        ()
-    }
 
 */
 }
