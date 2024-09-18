@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+import { assertUnreachable } from '@fuel-ts/utils';
+
 import {
   ARRAY_REGEX,
   createMatcher,
@@ -6,6 +8,7 @@ import {
   GENERIC_REGEX,
   STRUCT_REGEX,
   swayTypeMatchers,
+  TUPLE_REGEX,
 } from '../../../../matchers/sway-type-matchers';
 import type { AbiType, AbiTypeComponent, AbiTypeMetadata } from '../../../../parser';
 
@@ -117,28 +120,53 @@ function mapStructAsReference(abiType: AbiType | AbiTypeMetadata): TyperReturn {
   };
 }
 
-function mapComponents(
-  components: AbiType['components'] | AbiTypeMetadata['components'],
-  opts: { includeName: boolean; wrap: '{}' | '[]' }
-) {
-  const [leftWrap, rightWrap] = opts.wrap.split('');
-  const mapped = components!.map((c) => componentMapper(c, opts.includeName));
-  const input = mapped.map((m) => m.input).join(', ');
-  const output = mapped.map((m) => m.output).join(', ');
+function wrapText(text: string, wrap: '{}' | '[]' | 'Enum'): string {
+  switch (wrap) {
+    case '{}':
+      return `{ ${text} }`;
+    case '[]':
+      return `[${text}]`;
+    case 'Enum': {
+      const wrappedAsObj = wrapText(text, '{}');
+      return `Enum<${wrappedAsObj}>`;
+    }
+    default:
+      return assertUnreachable(wrap);
+  }
+}
+
+function mapComponents(parent: AbiType | AbiTypeMetadata, opts: { includeComponentName: boolean }) {
+  const components = parent.components;
+  const mapped = components!.map((c) => componentMapper(c, opts.includeComponentName));
+
+  // eslint-disable-next-line no-nested-ternary
+  const wrap = ENUM_REGEX.test(parent.swayType)
+    ? 'Enum'
+    : TUPLE_REGEX.test(parent.swayType)
+      ? '[]'
+      : '{}';
+
+  const input = wrapText(mapped.map((m) => m.input).join(', '), wrap);
+  const output = wrapText(mapped.map((m) => m.output).join(', '), wrap);
+
   const fuelsTypeImports = mapped.flatMap((m) => m.fuelsTypeImports).filter((x) => x !== undefined);
   const commonTypeImports = mapped
     .flatMap((m) => m.commonTypeImports)
     .filter((x) => x !== undefined);
 
+  if (wrap === 'Enum') {
+    commonTypeImports.push('Enum');
+  }
+
   return {
-    input: `${leftWrap} ${input} ${rightWrap}`,
-    output: `${leftWrap} ${output} ${rightWrap}`,
+    input,
+    output,
     fuelsTypeImports,
     commonTypeImports,
   };
 }
 
-function wrapContent(abiType: AbiTypeMetadata, content: TyperReturn): TyperReturn {
+function wrapasd(abiType: AbiTypeMetadata, content: TyperReturn): TyperReturn {
   if (!ENUM_REGEX.test(abiType.swayType)) {
     return content;
   }
@@ -163,13 +191,8 @@ export const structTyper: Typer = (abiType, opts) => {
   const typeName =
     STRUCT_REGEX.exec(abiType.swayType)?.[2] ?? ENUM_REGEX.exec(abiType.swayType)?.[2];
 
-  const { components } = abiType;
-
   const typeParameters = mapTypeParameters(abiType.typeParameters);
-  const content = wrapContent(
-    abiType,
-    mapComponents(components, { includeName: true, wrap: '{}' })
-  );
+  const content = mapComponents(abiType, { includeComponentName: true });
 
   const inputName = `${typeName}Input`;
   const inputType = `${inputName}${typeParameters.input}`;
@@ -193,7 +216,7 @@ export const structTyper: Typer = (abiType, opts) => {
 };
 
 export const tupleTyper: Typer = (abiType) =>
-  mapComponents(abiType.components, { includeName: false, wrap: '[]' });
+  mapComponents(abiType, { includeComponentName: false });
 
 export const arrayTyper: Typer = (abiType) => {
   const length = ARRAY_REGEX.exec(abiType.swayType)![2];
