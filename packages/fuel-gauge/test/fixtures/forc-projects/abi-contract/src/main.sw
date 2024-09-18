@@ -187,21 +187,23 @@ abi MyContract {
     fn types_struct_with_tuple(
         x: StructSingleGeneric<(bool, u64)>,
     ) -> StructSingleGeneric<(bool, u64)>;
+    fn types_struct_double_generic(
+        x: StructGenericWithEnum<u8, u16>,
+    ) -> StructGenericWithEnum<u8, u16>;
 
     fn types_enum(x: EnumWithNative) -> EnumWithNative;
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
     fn types_enum_with_vector(x: EnumWithVector) -> EnumWithVector;
     fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16>;
     fn types_enum_external(x: ExternalEnum) -> ExternalEnum;
+    fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs;
 
 /*
 
 
 
 
-    fn types_struct_double_generic(
-        x: StructGenericWithEnum<u8, u16>,
-    ) -> StructGenericWithEnum<u8, u16>;
+
 
     fn type_struct_external(x: ExternalStruct) -> ExternalStruct;
     fn types_struct_with_implicit_generics(
@@ -225,7 +227,6 @@ abi MyContract {
     fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets;
 
 
-    fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs;
 
     fn types_vector_u8(x: Vec<u8>) -> Vec<u8>;
     fn types_vector_boolean(x: Vec<bool>) -> Vec<bool>;
@@ -333,6 +334,12 @@ impl MyContract for Contract {
         x
     }
 
+    fn types_struct_double_generic(
+        x: StructGenericWithEnum<u8, u16>,
+    ) -> StructGenericWithEnum<u8, u16> {
+        x
+    }
+
     fn types_enum(x: EnumWithNative) -> EnumWithNative {
         x
     }
@@ -348,14 +355,11 @@ impl MyContract for Contract {
     fn types_enum_external(x: ExternalEnum) -> ExternalEnum {
         x
     }
-/*
-
-
-    fn types_struct_double_generic(
-        x: StructGenericWithEnum<u8, u16>,
-    ) -> StructGenericWithEnum<u8, u16> {
+    fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs {
         x
     }
+/*
+
 
     fn types_asset_id(x: AssetId) -> AssetId {
         x
@@ -452,9 +456,7 @@ impl MyContract for Contract {
         x
     }
 
-    fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs {
-        x
-    }
+
     fn type_struct_external(x: ExternalStruct) -> ExternalStruct {
         x
     }

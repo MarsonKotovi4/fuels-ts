@@ -10,10 +10,14 @@ export type EnumDoubleGenericInput<T1, T2> = Enum<{ a: T1, b: T2 }>;
 export type EnumDoubleGenericOutput<T1, T2> = EnumDoubleGenericInput<T1, T2>;
 export type EnumWithBuiltinTypeInput = Enum<{ a: boolean, b: BigNumberish }>;
 export type EnumWithBuiltinTypeOutput = EnumWithBuiltinTypeInput;
+export type EnumWithStructsInput = Enum<{ a: EnumWithNative, b: StructSimpleInput, c: EnumDoubleGenericInput<BigNumberish, StructSimpleInput> }>;
+export type EnumWithStructsOutput = Enum<{ a: EnumWithNative, b: StructSimpleOutput, c: EnumDoubleGenericOutput<BigNumberish, StructSimpleOutput> }>;
 export type EnumWithVectorInput = Enum<{ num: BigNumberish, vec: BigNumberish[] }>;
 export type EnumWithVectorOutput = Enum<{ num: number, vec: number[] }>;
 export type StructDoubleGenericInput<T1, T2> = { a: T1, b: T2 };
 export type StructDoubleGenericOutput<T1, T2> = StructDoubleGenericInput<T1, T2>;
+export type StructGenericWithEnumInput<T1, T2> = { a: T1, b: EnumDoubleGenericInput<T1, T2> };
+export type StructGenericWithEnumOutput<T1, T2> = { a: T1, b: EnumDoubleGenericOutput<T1, T2> };
 export type StructSimpleInput = { a: boolean, b: BigNumberish };
 export type StructSimpleOutput = { a: boolean, b: number };
 export type StructSingleGenericInput<T> = { a: T };
@@ -65,6 +69,10 @@ export interface AbiContractTypes {
             inputs: [x: EnumWithBuiltinTypeInput];
             output: EnumWithBuiltinTypeOutput;
         };
+        types_enum_with_structs: {
+            inputs: [x: EnumWithStructsInput];
+            output: EnumWithStructsOutput;
+        };
         types_enum_with_vector: {
             inputs: [x: EnumWithVectorInput];
             output: EnumWithVectorOutput;
@@ -88,6 +96,10 @@ export interface AbiContractTypes {
         types_str_slice: {
             inputs: [x: StrSlice];
             output: StrSlice;
+        };
+        types_struct_double_generic: {
+            inputs: [x: StructGenericWithEnumInput<BigNumberish, BigNumberish>];
+            output: StructGenericWithEnumOutput<number, number>;
         };
         types_struct_generic: {
             inputs: [x: StructSingleGenericInput<BigNumberish>];

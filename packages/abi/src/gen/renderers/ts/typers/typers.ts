@@ -20,7 +20,9 @@ export interface TyperReturn {
 
 export type Typer = (
   abiType: AbiType | AbiTypeMetadata,
-  metadataTypeResults?: TyperReturn[]
+  opts?: {
+    asReference?: boolean;
+  }
 ) => TyperReturn;
 
 const numberTyperReturn: ReturnType<Typer> = {
@@ -67,7 +69,7 @@ function componentMapper(
   c: AbiTypeComponent | { name: string; type: AbiType | AbiTypeMetadata },
   includeName: boolean
 ): TyperReturn {
-  const mapped = typerMatcher(c.type)!(c.type);
+  const mapped = typerMatcher(c.type)!(c.type, { asReference: true });
 
   if (!includeName) {
     return mapped;
@@ -99,19 +101,16 @@ function mapTypeParameters(
   };
 }
 
-function mapStructAsReference(abiType: AbiType): TyperReturn {
-  const { swayType, metadata } = abiType;
+function mapStructAsReference(abiType: AbiType | AbiTypeMetadata): TyperReturn {
+  const { swayType } = abiType;
   const typeName = STRUCT_REGEX.exec(swayType)?.[1] ?? ENUM_REGEX.exec(swayType)?.[2];
-
   const inputName = `${typeName}Input`;
   const outputName = `${typeName}Output`;
-  if (!metadata?.typeArguments) {
-    return {
-      input: inputName,
-      output: outputName,
-    };
-  }
-  const typeArgs = mapTypeParameters(metadata.typeArguments);
+
+  const typeArgs = mapTypeParameters(
+    'concreteTypeId' in abiType ? abiType.metadata?.typeArguments : abiType.typeParameters
+  );
+
   return {
     input: `${inputName}${typeArgs.input}`,
     output: `${outputName}${typeArgs.output}`,
@@ -139,31 +138,39 @@ function mapComponents(
   };
 }
 
-export const structTyper: Typer = (abiType) => {
+function wrapContent(abiType: AbiTypeMetadata, content: TyperReturn): TyperReturn {
+  if (!ENUM_REGEX.test(abiType.swayType)) {
+    return content;
+  }
+
+  return {
+    ...content,
+    commonTypeImports: ['Enum', ...(content.commonTypeImports ?? [])],
+    input: `Enum<${content.input}>`,
+    output: `Enum<${content.output}>`,
+  };
+}
+
+export const structTyper: Typer = (abiType, opts) => {
   if ('concreteTypeId' in abiType) {
+    return mapStructAsReference(abiType);
+  }
+
+  if (opts?.asReference) {
+    console.log(opts);
     return mapStructAsReference(abiType);
   }
 
   const typeName =
     STRUCT_REGEX.exec(abiType.swayType)?.[1] ?? ENUM_REGEX.exec(abiType.swayType)?.[2];
 
-  function wrapContent(content: TyperReturn): TyperReturn {
-    if (!ENUM_REGEX.test(abiType.swayType)) {
-      return content;
-    }
-
-    return {
-      ...content,
-      commonTypeImports: ['Enum', ...(content.commonTypeImports ?? [])],
-      input: `Enum<${content.input}>`,
-      output: `Enum<${content.output}>`,
-    };
-  }
-
   const { components } = abiType;
 
   const typeParameters = mapTypeParameters(abiType.typeParameters);
-  const content = wrapContent(mapComponents(components, { includeName: true, wrap: '{}' }));
+  const content = wrapContent(
+    abiType,
+    mapComponents(components, { includeName: true, wrap: '{}' })
+  );
 
   const inputName = `${typeName}Input`;
   const inputType = `${inputName}${typeParameters.input}`;
@@ -264,7 +271,7 @@ function isNativeEnum(abiType: AbiType | AbiTypeMetadata) {
   return abiType.components?.every((t) => swayTypeMatchers.void(t.type.swayType)) === true;
 }
 
-export const enumTyper: Typer = (abiType) => {
+export const enumTyper: Typer = (abiType, opts) => {
   if (isNativeEnum(abiType)) {
     const typeName = ENUM_REGEX.exec(abiType.swayType)![2];
 
@@ -281,7 +288,7 @@ export const enumTyper: Typer = (abiType) => {
     };
   }
 
-  return structTyper(abiType);
+  return structTyper(abiType, opts);
 };
 export const typerMatcher = createMatcher<Typer | undefined>({
   bool: boolTyper,
