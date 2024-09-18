@@ -24,6 +24,8 @@ export type StructSimpleInput = { a: boolean, b: BigNumberish };
 export type StructSimpleOutput = { a: boolean, b: number };
 export type StructSingleGenericInput<T> = { a: T };
 export type StructSingleGenericOutput<T> = StructSingleGenericInput<T>;
+export type StructWithGenericArrayInput<K> = { a: ArrayOfLength<StructDoubleGenericInput<K, BigNumberish>, 3> };
+export type StructWithGenericArrayOutput<K> = { a: ArrayOfLength<StructDoubleGenericOutput<K, number>, 3> };
 export type StructWithImplicitGenericsInput<E, F> = { arr: ArrayOfLength<E, 3>, tuple: [E, F], string: string, array: ArrayOfLength<BigNumberish, 2> };
 export type StructWithImplicitGenericsOutput<E, F> = { arr: ArrayOfLength<E, 3>, tuple: [E, F], string: string, array: ArrayOfLength<number, 2> };
 
@@ -116,6 +118,10 @@ export interface AbiContractTypes {
         types_struct_simple: {
             inputs: [x: StructSimpleInput];
             output: StructSimpleOutput;
+        };
+        types_struct_with_array: {
+            inputs: [x: StructWithGenericArrayInput<string>];
+            output: StructWithGenericArrayOutput<string>;
         };
         types_struct_with_implicit_generics: {
             inputs: [x: StructWithImplicitGenericsInput<string, BigNumberish>];

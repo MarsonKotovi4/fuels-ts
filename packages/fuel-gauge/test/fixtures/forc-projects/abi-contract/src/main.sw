@@ -194,6 +194,7 @@ abi MyContract {
     fn types_struct_with_implicit_generics(
         x: StructWithImplicitGenerics<b256, u8>,
     ) -> StructWithImplicitGenerics<b256, u8>;
+    fn types_struct_with_array(x: StructWithGenericArray<b256>) -> StructWithGenericArray<b256>;
 
     fn types_enum(x: EnumWithNative) -> EnumWithNative;
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
@@ -210,7 +211,6 @@ abi MyContract {
 
 
 
-    fn types_struct_with_array(x: StructWithGenericArray<b256>) -> StructWithGenericArray<b256>;
     fn types_struct_with_vector(x: StructWithVector) -> StructWithVector;
     fn types_struct_with_array_of_enums(x: StructWithEnumArray) -> StructWithEnumArray;
     fn types_struct_with_nested_array(x: StructWithNestedArray) -> StructWithNestedArray;
@@ -342,6 +342,14 @@ impl MyContract for Contract {
     fn types_struct_external(x: ExternalStruct) -> ExternalStruct {
         x
     }
+    fn types_struct_with_implicit_generics(
+        x: StructWithImplicitGenerics<b256, u8>,
+    ) -> StructWithImplicitGenerics<b256, u8> {
+        x
+    }
+    fn types_struct_with_array(x: StructWithGenericArray<b256>) -> StructWithGenericArray<b256> {
+        x
+    }
 
     fn types_enum(x: EnumWithNative) -> EnumWithNative {
         x
@@ -361,11 +369,7 @@ impl MyContract for Contract {
     fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs {
         x
     }
-    fn types_struct_with_implicit_generics(
-        x: StructWithImplicitGenerics<b256, u8>,
-    ) -> StructWithImplicitGenerics<b256, u8> {
-        x
-    }
+
 /*
 
 
@@ -467,9 +471,7 @@ impl MyContract for Contract {
 
 
 
-    fn types_struct_with_array(x: StructWithGenericArray<b256>) -> StructWithGenericArray<b256> {
-        x
-    }
+
     fn types_struct_with_vector(x: StructWithVector) -> StructWithVector {
         x
     }

@@ -95,28 +95,12 @@ function mapTypeParameters(
       output: '',
     };
   }
-  const results = typeArgs.map((ta) => typerMatcher(ta)!(ta));
+  const results = typeArgs.map((ta) => typerMatcher(ta)!(ta, { asReference: true }));
   const input = results.map((r) => r.input).join(', ');
   const output = results.map((r) => r.output).join(', ');
   return {
     input: `<${input}>`,
     output: `<${output}>`,
-  };
-}
-
-function mapStructAsReference(abiType: AbiType | AbiTypeMetadata): TyperReturn {
-  const { swayType } = abiType;
-  const typeName = STRUCT_REGEX.exec(swayType)?.[2] ?? ENUM_REGEX.exec(swayType)?.[2];
-  const inputName = `${typeName}Input`;
-  const outputName = `${typeName}Output`;
-
-  const typeArgs = mapTypeParameters(
-    'concreteTypeId' in abiType ? abiType.metadata?.typeArguments : abiType.typeParameters
-  );
-
-  return {
-    input: `${inputName}${typeArgs.input}`,
-    output: `${outputName}${typeArgs.output}`,
   };
 }
 
@@ -166,25 +150,24 @@ function mapComponents(parent: AbiType | AbiTypeMetadata, opts: { includeCompone
   };
 }
 
-function wrapasd(abiType: AbiTypeMetadata, content: TyperReturn): TyperReturn {
-  if (!ENUM_REGEX.test(abiType.swayType)) {
-    return content;
-  }
+function mapStructAsReference(abiType: AbiType | AbiTypeMetadata): TyperReturn {
+  const { swayType } = abiType;
+  const typeName = STRUCT_REGEX.exec(swayType)?.[2] ?? ENUM_REGEX.exec(swayType)?.[2];
+  const inputName = `${typeName}Input`;
+  const outputName = `${typeName}Output`;
+
+  const typeArgs = mapTypeParameters(
+    'concreteTypeId' in abiType ? abiType.metadata?.typeArguments : abiType.typeParameters
+  );
 
   return {
-    ...content,
-    commonTypeImports: ['Enum', ...(content.commonTypeImports ?? [])],
-    input: `Enum<${content.input}>`,
-    output: `Enum<${content.output}>`,
+    input: `${inputName}${typeArgs.input}`,
+    output: `${outputName}${typeArgs.output}`,
   };
 }
 
 export const structTyper: Typer = (abiType, opts) => {
-  if ('concreteTypeId' in abiType) {
-    return mapStructAsReference(abiType);
-  }
-
-  if (opts?.asReference) {
+  if ('concreteTypeId' in abiType || opts?.asReference) {
     return mapStructAsReference(abiType);
   }
 
@@ -222,7 +205,7 @@ export const arrayTyper: Typer = (abiType) => {
   const length = ARRAY_REGEX.exec(abiType.swayType)![2];
 
   const { type } = abiType.components![0]!;
-  const mapped = typerMatcher(type)!(type);
+  const mapped = typerMatcher(type)!(type, { asReference: true });
 
   const input = `ArrayOfLength<${mapped.input}, ${length}>`;
   const output = `ArrayOfLength<${mapped.output}, ${length}>`;
@@ -237,7 +220,7 @@ export const arrayTyper: Typer = (abiType) => {
 
 export const vectorTyper: Typer = (abiType) => {
   const { type } = abiType.components![0]!;
-  const mapped = typerMatcher(type)!(type);
+  const mapped = typerMatcher(type)!(type, { asReference: true });
   const input = `${mapped.input}[]`;
   const output = `${mapped.output}[]`;
   return {
@@ -249,7 +232,7 @@ export const vectorTyper: Typer = (abiType) => {
 
 export const optionTyper: Typer = (abiType) => {
   const { type } = abiType.components![1]!;
-  const some = typerMatcher(type)!(type);
+  const some = typerMatcher(type)!(type, { asReference: true });
   const input = `Option<${some.input}>`;
   const output = `Option<${some.output}>`;
   return {
