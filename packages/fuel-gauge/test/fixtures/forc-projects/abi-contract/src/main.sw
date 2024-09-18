@@ -225,6 +225,15 @@ abi MyContract {
     fn types_result(x: Result<u64, u32>) -> Result<u64, str[10]>;
     fn types_void(x: ()) -> ();
     fn types_void_then_value(x: (), y: u8) -> ();
+
+    fn multi_arg_u64_u64(x: u64, y: u64) -> u64;
+    fn multi_arg_b256_bool(x: b256, y: bool) -> (b256, bool);
+    fn multi_arg_vector_vector(x: Vec<u8>, y: Vec<u8>) -> (Vec<u8>, Vec<u8>);
+    fn multi_arg_vector_b256(x: Vec<u8>, y: b256) -> (Vec<u8>, b256);
+    fn multi_arg_struct_vector(x: StructSimple, y: Vec<u8>) -> (StructSimple, Vec<u8>);
+    fn multi_arg_u64_struct(x: u64, y: StructSimple) -> (u64, StructSimple);
+    fn multi_arg_str_str(x: str[5], y: str[5]) -> (str[5], str[5]);
+    fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>);
 /*
 
 
@@ -255,14 +264,7 @@ abi MyContract {
     fn types_value_then_void_then_value(x: u8, y: (), z: u8) -> ();
     fn types_value_then_value_then_void_then_void(x: u8, y: u8, z: (), a: ()) -> ();
 
-    fn multi_arg_u64_u64(x: u64, y: u64) -> u64;
-    fn multi_arg_b256_bool(x: b256, y: bool) -> (b256, bool);
-    fn multi_arg_vector_vector(x: Vec<u8>, y: Vec<u8>) -> (Vec<u8>, Vec<u8>);
-    fn multi_arg_vector_b256(x: Vec<u8>, y: b256) -> (Vec<u8>, b256);
-    fn multi_arg_struct_vector(x: StructSimple, y: Vec<u8>) -> (StructSimple, Vec<u8>);
-    fn multi_arg_u64_struct(x: u64, y: StructSimple) -> (u64, StructSimple);
-    fn multi_arg_str_str(x: str[5], y: str[5]) -> (str[5], str[5]);
-    fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>);
+
 */
 }
 
@@ -444,6 +446,32 @@ impl MyContract for Contract {
     fn types_void_then_value(x: (), y: u8) -> () {
         ()
     }
+
+    fn multi_arg_u64_u64(x: u64, y: u64) -> u64 {
+        0
+    }
+    fn multi_arg_b256_bool(x: b256, y: bool) -> (b256, bool) {
+        (x, y)
+    }
+    fn multi_arg_vector_vector(x: Vec<u8>, y: Vec<u8>) -> (Vec<u8>, Vec<u8>) {
+        (x, y)
+    }
+    fn multi_arg_vector_b256(x: Vec<u8>, y: b256) -> (Vec<u8>, b256) {
+        (x, y)
+    }
+    fn multi_arg_struct_vector(x: StructSimple, y: Vec<u8>) -> (StructSimple, Vec<u8>) {
+        (x, y)
+    }
+    fn multi_arg_u64_struct(x: u64, y: StructSimple) -> (u64, StructSimple) {
+        (x, y)
+    }
+    fn multi_arg_str_str(x: str[5], y: str[5]) -> (str[5], str[5]) {
+        (x, y)
+    }
+    fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>) {
+        (x, y, z)
+    }
+
 /*
 
 
@@ -510,29 +538,6 @@ impl MyContract for Contract {
     fn types_value_then_value_then_void_then_void(x: u8, y: u8, z: (), a: ()) -> () {
         ()
     }
-    fn multi_arg_u64_u64(x: u64, y: u64) -> u64 {
-        0
-    }
-    fn multi_arg_b256_bool(x: b256, y: bool) -> (b256, bool) {
-        (x, y)
-    }
-    fn multi_arg_vector_vector(x: Vec<u8>, y: Vec<u8>) -> (Vec<u8>, Vec<u8>) {
-        (x, y)
-    }
-    fn multi_arg_vector_b256(x: Vec<u8>, y: b256) -> (Vec<u8>, b256) {
-        (x, y)
-    }
-    fn multi_arg_struct_vector(x: StructSimple, y: Vec<u8>) -> (StructSimple, Vec<u8>) {
-        (x, y)
-    }
-    fn multi_arg_u64_struct(x: u64, y: StructSimple) -> (u64, StructSimple) {
-        (x, y)
-    }
-    fn multi_arg_str_str(x: str[5], y: str[5]) -> (str[5], str[5]) {
-        (x, y)
-    }
-    fn multi_arg_u32_vector_vector(x: u32, y: Vec<u64>, z: Vec<u64>) -> (u32, Vec<u64>, Vec<u64>) {
-        (x, y, z)
-    }
+
 */
 }

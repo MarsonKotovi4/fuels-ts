@@ -49,6 +49,38 @@ export interface AbiContractTypes {
             inputs: [];
             output: ConfigurablesOutput;
         };
+        multi_arg_b256_bool: {
+            inputs: [x: string, y: boolean];
+            output: [string, boolean];
+        };
+        multi_arg_str_str: {
+            inputs: [x: string, y: string];
+            output: [string, string];
+        };
+        multi_arg_struct_vector: {
+            inputs: [x: StructSimpleInput, y: BigNumberish[]];
+            output: [StructSimpleOutput, number[]];
+        };
+        multi_arg_u32_vector_vector: {
+            inputs: [x: BigNumberish, y: BigNumberish[], z: BigNumberish[]];
+            output: [number, BigNumberish[], BigNumberish[]];
+        };
+        multi_arg_u64_struct: {
+            inputs: [x: BigNumberish, y: StructSimpleInput];
+            output: [BigNumberish, StructSimpleOutput];
+        };
+        multi_arg_u64_u64: {
+            inputs: [x: BigNumberish, y: BigNumberish];
+            output: BigNumberish;
+        };
+        multi_arg_vector_b256: {
+            inputs: [x: BigNumberish[], y: string];
+            output: [number[], string];
+        };
+        multi_arg_vector_vector: {
+            inputs: [x: BigNumberish[], y: BigNumberish[]];
+            output: [number[], number[]];
+        };
         types_array: {
             inputs: [x: ArrayOfLength<BigNumberish, 4>];
             output: ArrayOfLength<number, 4>;
