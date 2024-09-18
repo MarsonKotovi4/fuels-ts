@@ -195,6 +195,10 @@ abi MyContract {
         x: StructWithImplicitGenerics<b256, u8>,
     ) -> StructWithImplicitGenerics<b256, u8>;
     fn types_struct_with_array(x: StructWithGenericArray<b256>) -> StructWithGenericArray<b256>;
+    fn types_struct_with_vector(x: StructWithVector) -> StructWithVector;
+    fn types_struct_with_array_of_enums(x: StructWithEnumArray) -> StructWithEnumArray;
+    fn types_struct_with_nested_array(x: StructWithNestedArray) -> StructWithNestedArray;
+    fn types_struct_with_nested_tuple(x: StructWithNestedTuple) -> StructWithNestedTuple;
 
     fn types_enum(x: EnumWithNative) -> EnumWithNative;
     fn types_enum_with_builtin_type(x: EnumWithBuiltinType) -> EnumWithBuiltinType;
@@ -202,6 +206,23 @@ abi MyContract {
     fn types_generic_enum(x: EnumDoubleGeneric<u8, u16>) -> EnumDoubleGeneric<u8, u16>;
     fn types_enum_external(x: ExternalEnum) -> ExternalEnum;
     fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs;
+    fn types_struct_with_nested_struct(x: StructWithNestedStruct) -> StructWithNestedStruct;
+    fn types_struct_with_single_option(x: StructWithSingleOption) -> StructWithSingleOption;
+
+    fn types_tuple(x: (u8, u8, u8)) -> (u8, u8, u8);
+    fn types_tuple_complex(
+        x: (u8, StructSingleGeneric<StructSingleGeneric<u64>>, str[3]),
+    ) -> (u8, StructSingleGeneric<StructSingleGeneric<u64>>, str[3]);
+
+    fn types_vector_u8(x: Vec<u8>) -> Vec<u8>;
+    fn types_vector_boolean(x: Vec<bool>) -> Vec<bool>;
+    fn types_vector_geo(x: Vec<StructSimple>) -> Vec<StructSimple>;
+    fn types_vector_inside_vector(x: Vec<Vec<u32>>) -> Vec<Vec<u32>>;
+    fn types_vector_inside_array(x: [Vec<u32>; 1]) -> [Vec<u32>; 1];
+    fn types_vector_option(x: Vec<StructWithMultiOption>) -> Vec<StructWithMultiOption>;
+    fn types_option(x: Option<u8>) -> Option<u8>;
+    fn types_option_geo(x: Option<StructSimple>) -> Option<StructSimple>;
+    fn types_result(x: Result<u64, u32>) -> Result<u64, str[10]>;
 
 /*
 
@@ -211,40 +232,23 @@ abi MyContract {
 
 
 
-    fn types_struct_with_vector(x: StructWithVector) -> StructWithVector;
-    fn types_struct_with_array_of_enums(x: StructWithEnumArray) -> StructWithEnumArray;
-    fn types_struct_with_nested_array(x: StructWithNestedArray) -> StructWithNestedArray;
-    fn types_struct_with_nested_tuple(x: StructWithNestedTuple) -> StructWithNestedTuple;
-    fn types_struct_with_nested_struct(x: StructWithNestedStruct) -> StructWithNestedStruct;
     fn types_struct_with_multiple_struct_params(x: StructA, y: StructB, z: StructC) -> bool;
     fn types_struct_with_complex_nested_struct(x: StructD<u32, u32, StructF<Vec<StructG>>>) -> bool;
-    fn types_struct_with_single_option(x: StructWithSingleOption) -> StructWithSingleOption;
 
-    fn types_tuple(x: (u8, u8, u8)) -> (u8, u8, u8);
-    fn types_tuple_complex(
-        x: (u8, StructSingleGeneric<StructSingleGeneric<u64>>, str[3]),
-    ) -> (u8, StructSingleGeneric<StructSingleGeneric<u64>>, str[3]);
+
     fn types_tuple_with_native_types(x: (AssetId, AssetId, bool)) -> (AssetId, AssetId, bool);
     fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets;
 
 
 
-    fn types_vector_u8(x: Vec<u8>) -> Vec<u8>;
-    fn types_vector_boolean(x: Vec<bool>) -> Vec<bool>;
-    fn types_vector_geo(x: Vec<StructSimple>) -> Vec<StructSimple>;
-    fn types_vector_inside_vector(x: Vec<Vec<u32>>) -> Vec<Vec<u32>>;
-    fn types_vector_inside_array(x: [Vec<u32>; 1]) -> [Vec<u32>; 1];
-    fn types_vector_option(x: Vec<StructWithMultiOption>) -> Vec<StructWithMultiOption>;
 
-    fn types_option(x: Option<u8>) -> Option<u8>;
-    fn types_option_geo(x: Option<StructSimple>) -> Option<StructSimple>;
+
 
     fn type_identity(x: Identity) -> Identity;
     fn type_address(x: Address) -> Address;
     fn type_contract_id(x: ContractId) -> ContractId;
     fn types_asset_id(x: AssetId) -> AssetId;
     fn types_evm_address(x: EvmAddress) -> EvmAddress;
-    fn types_result(x: Result<u64, u32>) -> Result<u64, str[10]>;
 
     fn types_void(x: ()) -> ();
     fn types_void_then_value(x: (), y: u8) -> ();
@@ -350,7 +354,24 @@ impl MyContract for Contract {
     fn types_struct_with_array(x: StructWithGenericArray<b256>) -> StructWithGenericArray<b256> {
         x
     }
-
+    fn types_struct_with_vector(x: StructWithVector) -> StructWithVector {
+        x
+    }
+    fn types_struct_with_array_of_enums(x: StructWithEnumArray) -> StructWithEnumArray {
+        x
+    }
+    fn types_struct_with_nested_array(x: StructWithNestedArray) -> StructWithNestedArray {
+        x
+    }
+    fn types_struct_with_nested_tuple(x: StructWithNestedTuple) -> StructWithNestedTuple {
+        x
+    }
+    fn types_struct_with_single_option(x: StructWithSingleOption) -> StructWithSingleOption {
+        x
+    }
+    fn types_struct_with_nested_struct(x: StructWithNestedStruct) -> StructWithNestedStruct {
+        x
+    }
     fn types_enum(x: EnumWithNative) -> EnumWithNative {
         x
     }
@@ -369,56 +390,20 @@ impl MyContract for Contract {
     fn types_enum_with_structs(x: EnumWithStructs) -> EnumWithStructs {
         x
     }
-
-/*
-
-
-    fn types_asset_id(x: AssetId) -> AssetId {
-        x
-    }
-
-
-
     fn types_tuple(x: (u8, u8, u8)) -> (u8, u8, u8) {
         (x.0, x.1, x.2)
     }
+
     fn types_tuple_complex(
         x: (u8, StructSingleGeneric<StructSingleGeneric<u64>>, str[3]),
     ) -> (u8, StructSingleGeneric<StructSingleGeneric<u64>>, str[3]) {
         (x.0, x.1, x.2)
     }
-    fn types_tuple_with_native_types(x: (AssetId, AssetId, bool)) -> (AssetId, AssetId, bool) {
-        (x.0, x.1, x.2)
-    }
-    fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets {
-        (x.0, x.1, x.2)
-    }
-
-
-    fn types_struct_with_nested_array(x: StructWithNestedArray) -> StructWithNestedArray {
-        x
-    }
-    fn types_struct_with_nested_tuple(x: StructWithNestedTuple) -> StructWithNestedTuple {
-        x
-    }
-    fn types_struct_with_nested_struct(x: StructWithNestedStruct) -> StructWithNestedStruct {
-        x
-    }
-    fn types_struct_with_multiple_struct_params(x: StructA, y: StructB, z: StructC) -> bool {
-        true
-    }
-    fn types_struct_with_complex_nested_struct(x: StructD<u32, u32, StructF<Vec<StructG>>>) -> bool {
-        false
-    }
-    fn types_struct_with_single_option(x: StructWithSingleOption) -> StructWithSingleOption {
-        x
-    }
-
-
 
     fn types_vector_u8(x: Vec<u8>) -> Vec<u8> {
         x
     }
+
     fn types_vector_boolean(x: Vec<bool>) -> Vec<bool> {
         x
     }
@@ -431,6 +416,7 @@ impl MyContract for Contract {
     fn types_vector_geo(x: Vec<StructSimple>) -> Vec<StructSimple> {
         x
     }
+
     fn types_vector_option(x: Vec<StructWithMultiOption>) -> Vec<StructWithMultiOption> {
         x
     }
@@ -440,12 +426,6 @@ impl MyContract for Contract {
     fn types_option_geo(x: Option<StructSimple>) -> Option<StructSimple> {
         x
     }
-    fn types_evm_address(x: EvmAddress) -> EvmAddress {
-        EvmAddress::from(0x0606060606060606060606060606060606060606060606060606060606060606)
-    }
-
-
-
 
     fn types_result(x: Result<u64, u32>) -> Result<u64, str[10]> {
         if (x.is_err()) {
@@ -458,6 +438,46 @@ impl MyContract for Contract {
             Err(MyContractError::DivisionByZero) => Err(__to_str_array("DivisError")),
         }
     }
+/*
+
+
+    fn types_asset_id(x: AssetId) -> AssetId {
+        x
+    }
+
+
+
+
+
+    fn types_tuple_with_native_types(x: (AssetId, AssetId, bool)) -> (AssetId, AssetId, bool) {
+        (x.0, x.1, x.2)
+    }
+    fn types_alias_tuple_with_native_types(x: TupleWithNativeAssets) -> TupleWithNativeAssets {
+        (x.0, x.1, x.2)
+    }
+
+
+
+    fn types_struct_with_multiple_struct_params(x: StructA, y: StructB, z: StructC) -> bool {
+        true
+    }
+    fn types_struct_with_complex_nested_struct(x: StructD<u32, u32, StructF<Vec<StructG>>>) -> bool {
+        false
+    }
+
+
+
+
+
+
+    fn types_evm_address(x: EvmAddress) -> EvmAddress {
+        EvmAddress::from(0x0606060606060606060606060606060606060606060606060606060606060606)
+    }
+
+
+
+
+
     fn type_address(x: Address) -> Address {
         x
     }
@@ -472,12 +492,7 @@ impl MyContract for Contract {
 
 
 
-    fn types_struct_with_vector(x: StructWithVector) -> StructWithVector {
-        x
-    }
-    fn types_struct_with_array_of_enums(x: StructWithEnumArray) -> StructWithEnumArray {
-        x
-    }
+
 
 
     fn types_void(x: ()) -> () {

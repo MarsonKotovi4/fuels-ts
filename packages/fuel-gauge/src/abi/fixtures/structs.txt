@@ -1,0 +1,14 @@
+export type StructAInput = { propA1: BigNumberish };
+export type StructAOutput = { propA1: number };
+export type StructBInput = { propB1: StructAInput, propB2: BigNumberish };
+export type StructBOutput = { propB1: StructAOutput, propB2: number };
+export type StructCInput = { propC1: StructAInput, propC2: StructBInput[], propC3: StructDInput<BigNumberish, BigNumberish, StructFInput<string>>, propC4: StructDInput<BigNumberish, BigNumberish, StructFInput<boolean>>[], propC5: StructDInput<BigNumberish, BigNumberish, StructFInput<StructGInput[]>>[] };
+export type StructCOutput = { propC1: StructAOutput, propC2: StructBOutput[], propC3: StructDOutput<BigNumberish, BigNumberish, StructFOutput<string>>, propC4: StructDOutput<BigNumberish, BigNumberish, StructFOutput<boolean>>[], propC5: StructDOutput<BigNumberish, BigNumberish, StructFOutput<StructGOutput[]>>[] };
+export type StructDInput<T, U, V> = { propD1: StructEInput<T>[], propD2: U, propD3: V };
+export type StructDOutput<T, U, V> = { propD1: StructEOutput<T>[], propD2: U, propD3: V };
+export type StructEInput<T> = { propE1: StructAInput, propE2: StructBInput, propE3: T };
+export type StructEOutput<T> = { propE1: StructAOutput, propE2: StructBOutput, propE3: T };
+export type StructFInput<T> = { propF1: BigNumberish, propF2: T };
+export type StructFOutput<T> = StructFInput<T>;
+export type StructGInput = { propG1: BigNumberish };
+export type StructGOutput = { propG1: number };

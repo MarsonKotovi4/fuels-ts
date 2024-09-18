@@ -1,5 +1,5 @@
 import type { BigNumberish, Bytes, RawSlice, StdString, StrSlice } from 'fuels';
-import type { ArrayOfLength, Enum, Option } from './common';
+import type { ArrayOfLength, Enum, Option, Result } from './common';
 
 export enum EnumWithNative { Checked = 'Checked', Pending = 'Pending' };
 export enum ExternalEnum { A = 'A', B = 'B' };
@@ -24,10 +24,24 @@ export type StructSimpleInput = { a: boolean, b: BigNumberish };
 export type StructSimpleOutput = { a: boolean, b: number };
 export type StructSingleGenericInput<T> = { a: T };
 export type StructSingleGenericOutput<T> = StructSingleGenericInput<T>;
+export type StructWithEnumArrayInput = { a: ArrayOfLength<EnumWithNative, 3> };
+export type StructWithEnumArrayOutput = StructWithEnumArrayInput;
 export type StructWithGenericArrayInput<K> = { a: ArrayOfLength<StructDoubleGenericInput<K, BigNumberish>, 3> };
 export type StructWithGenericArrayOutput<K> = { a: ArrayOfLength<StructDoubleGenericOutput<K, number>, 3> };
 export type StructWithImplicitGenericsInput<E, F> = { arr: ArrayOfLength<E, 3>, tuple: [E, F], string: string, array: ArrayOfLength<BigNumberish, 2> };
 export type StructWithImplicitGenericsOutput<E, F> = { arr: ArrayOfLength<E, 3>, tuple: [E, F], string: string, array: ArrayOfLength<number, 2> };
+export type StructWithMultiOptionInput = { multiple: ArrayOfLength<Option<BigNumberish>, 5> };
+export type StructWithMultiOptionOutput = { multiple: ArrayOfLength<Option<number>, 5> };
+export type StructWithNestedArrayInput = { a: ArrayOfLength<StructDoubleGenericInput<StructSingleGenericInput<BigNumberish>, string>, 2> };
+export type StructWithNestedArrayOutput = { a: ArrayOfLength<StructDoubleGenericOutput<StructSingleGenericOutput<BigNumberish>, string>, 2> };
+export type StructWithNestedStructInput = { a: StructDoubleGenericInput<StructSingleGenericInput<BigNumberish>, BigNumberish> };
+export type StructWithNestedStructOutput = { a: StructDoubleGenericOutput<StructSingleGenericOutput<number>, number> };
+export type StructWithNestedTupleInput = { a: [BigNumberish, StructSingleGenericInput<StructSingleGenericInput<BigNumberish>>, string] };
+export type StructWithNestedTupleOutput = { a: [number, StructSingleGenericOutput<StructSingleGenericOutput<BigNumberish>>, string] };
+export type StructWithSingleOptionInput = { single: Option<StructWithMultiOptionInput> };
+export type StructWithSingleOptionOutput = { single: Option<StructWithMultiOptionOutput> };
+export type StructWithVectorInput = { num: BigNumberish, vec: BigNumberish[] };
+export type StructWithVectorOutput = { num: number, vec: number[] };
 
 export interface AbiContractTypes {
     functions: {
@@ -87,9 +101,21 @@ export interface AbiContractTypes {
             inputs: [x: EnumDoubleGenericInput<BigNumberish, BigNumberish>];
             output: EnumDoubleGenericOutput<number, number>;
         };
+        types_option: {
+            inputs: [x: Option<BigNumberish>];
+            output: Option<number>;
+        };
+        types_option_geo: {
+            inputs: [x: Option<StructSimpleInput>];
+            output: Option<StructSimpleOutput>;
+        };
         types_raw_slice: {
             inputs: [x: RawSlice];
             output: RawSlice;
+        };
+        types_result: {
+            inputs: [x: Result<BigNumberish, BigNumberish>];
+            output: Result<BigNumberish, string>;
         };
         types_std_string: {
             inputs: [x: StdString];
@@ -123,13 +149,45 @@ export interface AbiContractTypes {
             inputs: [x: StructWithGenericArrayInput<string>];
             output: StructWithGenericArrayOutput<string>;
         };
+        types_struct_with_array_of_enums: {
+            inputs: [x: StructWithEnumArrayInput];
+            output: StructWithEnumArrayOutput;
+        };
         types_struct_with_implicit_generics: {
             inputs: [x: StructWithImplicitGenericsInput<string, BigNumberish>];
             output: StructWithImplicitGenericsOutput<string, number>;
         };
+        types_struct_with_nested_array: {
+            inputs: [x: StructWithNestedArrayInput];
+            output: StructWithNestedArrayOutput;
+        };
+        types_struct_with_nested_struct: {
+            inputs: [x: StructWithNestedStructInput];
+            output: StructWithNestedStructOutput;
+        };
+        types_struct_with_nested_tuple: {
+            inputs: [x: StructWithNestedTupleInput];
+            output: StructWithNestedTupleOutput;
+        };
+        types_struct_with_single_option: {
+            inputs: [x: StructWithSingleOptionInput];
+            output: StructWithSingleOptionOutput;
+        };
         types_struct_with_tuple: {
             inputs: [x: StructSingleGenericInput<[boolean, BigNumberish]>];
             output: StructSingleGenericOutput<[boolean, BigNumberish]>;
+        };
+        types_struct_with_vector: {
+            inputs: [x: StructWithVectorInput];
+            output: StructWithVectorOutput;
+        };
+        types_tuple: {
+            inputs: [x: [BigNumberish, BigNumberish, BigNumberish]];
+            output: [number, number, number];
+        };
+        types_tuple_complex: {
+            inputs: [x: [BigNumberish, StructSingleGenericInput<StructSingleGenericInput<BigNumberish>>, string]];
+            output: [number, StructSingleGenericOutput<StructSingleGenericOutput<BigNumberish>>, string];
         };
         types_u16: {
             inputs: [x: BigNumberish];
@@ -150,6 +208,30 @@ export interface AbiContractTypes {
         types_u8: {
             inputs: [x: BigNumberish];
             output: number;
+        };
+        types_vector_boolean: {
+            inputs: [x: boolean[]];
+            output: boolean[];
+        };
+        types_vector_geo: {
+            inputs: [x: StructSimpleInput[]];
+            output: StructSimpleOutput[];
+        };
+        types_vector_inside_array: {
+            inputs: [x: ArrayOfLength<BigNumberish[], 1>];
+            output: ArrayOfLength<number[], 1>;
+        };
+        types_vector_inside_vector: {
+            inputs: [x: BigNumberish[][]];
+            output: number[][];
+        };
+        types_vector_option: {
+            inputs: [x: StructWithMultiOptionInput[]];
+            output: StructWithMultiOptionOutput[];
+        };
+        types_vector_u8: {
+            inputs: [x: BigNumberish[]];
+            output: number[];
         };
     }
 }

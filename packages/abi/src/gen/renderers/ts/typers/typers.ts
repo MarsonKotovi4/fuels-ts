@@ -295,6 +295,32 @@ export const enumTyper: Typer = (abiType, opts) => {
 
   return structTyper(abiType, opts);
 };
+
+export const resultTyper: Typer = (abiType) => {
+  const [{ type: ok }, { type: err }] = abiType.components!;
+  const mappedOk = typerMatcher(ok)!(ok, { asReference: true });
+  const mappedErr = typerMatcher(err)!(err, { asReference: true });
+
+  const input = `Result<${mappedOk.input}, ${mappedErr.input}>`;
+  const output = `Result<${mappedOk.output}, ${mappedErr.output}>`;
+
+  const fuelsTypeImports = [
+    mappedOk.fuelsTypeImports ?? [],
+    mappedErr.fuelsTypeImports ?? [],
+  ].flat();
+  const commonTypeImports = [
+    mappedOk.commonTypeImports ?? [],
+    mappedErr.commonTypeImports ?? [],
+    ['Result'],
+  ].flat();
+  return {
+    input,
+    output,
+    fuelsTypeImports,
+    commonTypeImports,
+  };
+};
+
 export const typerMatcher = createMatcher<Typer | undefined>({
   bool: boolTyper,
   u8: u8Typer,
@@ -316,8 +342,8 @@ export const typerMatcher = createMatcher<Typer | undefined>({
   rawUntypedSlice: rawSliceTyper,
   stdString: stdStringTyper,
   enum: enumTyper,
+  result: resultTyper,
   void: undefined,
-  result: undefined,
   assetId: undefined,
   evmAddress: undefined,
   rawUntypedPtr: undefined,
