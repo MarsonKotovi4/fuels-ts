@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.94.7
+
+### Patch Changes
+
+- 600b781: build(deps): bump the deps-patch group
+  - @fuel-ts/errors@0.94.7
+
 ## 0.94.6
 
 ### Patch Changes

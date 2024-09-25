@@ -1,5 +1,19 @@
 # @fuel-ts/abi-typegen
 
+## 0.94.7
+
+### Patch Changes
+
+- 48db506: feat: support message types
+- 600b781: build(deps): bump the deps-patch group
+- Updated dependencies [47b5cd3]
+- Updated dependencies [431990d]
+- Updated dependencies [20d2ac2]
+  - @fuel-ts/versions@0.94.7
+  - @fuel-ts/errors@0.94.7
+  - @fuel-ts/utils@0.94.7
+  - @fuel-ts/interfaces@0.94.7
+
 ## 0.94.6
 
 ### Patch Changes

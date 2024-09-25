@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.94.7
+
+### Patch Changes
+
+- Updated dependencies [600b781]
+  - @fuel-ts/math@0.94.7
+  - @fuel-ts/hasher@0.94.7
+
 ## 0.94.6
 
 ### Patch Changes
